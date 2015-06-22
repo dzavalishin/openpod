@@ -64,6 +64,12 @@ int		rq_prio_cmp(pod_request *rqa, pod_request *rqb);
 // returns ENOENT and sets rq to 0 if q is empty.
 errno_t		pod_q_get_last( pod_q *q, pod_request **rq ); 
 
+// returns 0 if rq is on q, ENOENT else
+errno_t		pod_q_is_on_q( pod_q *q, pod_request *rq ); 
+
+// returns 0 if q is NOT empty, ENOENT else
+errno_t		pod_q_is_empty( pod_q *q ); 
+
 
 #endif // POD_QUEUES_H
 
