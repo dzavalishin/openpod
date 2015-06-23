@@ -1,6 +1,7 @@
 
 
 #include "pod_types.h"
+#include "pod_driver.h"
 
 // ------------------------------------------------------------------
 //
@@ -55,11 +56,12 @@ errno_t		pod_kernel_signal_cond( pod_cond_t *cond );
 
 // ------------------------------------------------------------------
 //
-// Logging
+// Logging and panic
 //
 // ------------------------------------------------------------------
 
 errno_t		pod_log_print( int loglevel, const char **format, ... );
+void 		pod_panic(const char *fmt, ...)
 
 
 // ------------------------------------------------------------------
