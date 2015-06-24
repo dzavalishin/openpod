@@ -1,0 +1,2 @@
+Simplest OpenPOD driver barebone.
+No threads, no HW scan, no rq queue, single dev, the smallest possible one.
