@@ -28,8 +28,8 @@ typedef enum pod_video_operartions
 // Pixel format, pod_pixel_rgba is preferred
 typedef enum pod_pixel_fmt 
 {
-	pod_pixel_rgb,		// 24 bit RGB
 	pod_pixel_rgba,		// 32 bit RGBA, A byte is ignored by HW
+	pod_pixel_rgb,		// 24 bit RGB
 	pod_pixel_r5g6b5,	// 16 bit, 5-6-5
 	pod_pixel_r5g5b5,	// 16 bit, 5-5-5
 } pod_pixel_fmt;

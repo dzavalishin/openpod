@@ -19,6 +19,7 @@ typedef enum pod_rq_status
 	pod_rq_status_inknown_err,	// Error: Something we didn't think about
 	pod_rq_status_ioerr,		// Error: IO
 	pod_rq_status_stopped,		// Error: Driver is not active
+	pod_rq_status_param,		// Error: Invalid request parameters
 
 } pod_rq_status;
 

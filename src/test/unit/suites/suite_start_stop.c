@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
+// sleep
+#include <unistd.h>
+
 #include <CUnit/Basic.h>
 
 #include "utils.h"
 
 #include <openpod.h>
 //#include <pod_device.h>
-
+#include <pod_io_video.h>
 
 //-------------------------------------------------------------------
 //
@@ -169,6 +172,31 @@ static errno_t	test_driver_enqueue( pod_device *dev, pod_request *rq )
 {
 	(void) dev;
 	// Serve request - do it right now
+
+	//printf( "rq->request_class = %d, dev->class_id = %d\n", rq->request_class, dev->class_id );
+
+	if( rq->request_class != dev->class_id ) goto einval;
+
+	switch( rq->operation )
+	{
+	case pod_video_getmode:
+		{
+		struct pod_video_rq_mode *rq_arg = rq->op_arg;
+
+		rq_arg->x_size = 1024;
+		rq_arg->y_size = 768;
+		rq_arg->buf_fmt = pod_pixel_rgba;
+		rq_arg->vbuf = 0; // no direct access to video buffer
+		}
+		break;
+
+	default:
+einval:
+		rq->err = pod_rq_status_param;
+		rq->done( rq );
+
+		return 0;
+	}
 
 	rq->err = pod_rq_status_ok;
 	rq->done( rq );

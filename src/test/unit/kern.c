@@ -1,6 +1,8 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+// sleep
+#include <unistd.h>
 
 #include <pthread.h>
 
@@ -13,7 +15,20 @@
 
 void req_done_func( struct pod_request *rq )
 {
-	fprintf( stderr, "rq done\n" );
+	fprintf( stderr, "rq done, status = %d\n", rq->err );
+
+	struct pod_video_rq_mode *rq_arg = rq->op_arg;
+
+	if( rq_arg == 0 )
+	{
+		fprintf( stderr, "rq arg == 0\n" );
+	}
+	else
+	{
+		if( !rq->err )
+			fprintf( stderr, "x_size, y_size = %d*%d, format = %d\n", rq_arg->x_size, rq_arg->y_size, rq_arg->buf_fmt );
+	}
+
 	free(rq); // frees piggybacked arg too
 }
 
