@@ -57,6 +57,7 @@ typedef struct pod_dev_f
 } pod_dev_f;
 
 
+#define POD_DEVICE_MAGIC 0xDEFF00A3
 
 typedef struct pod_device
 {

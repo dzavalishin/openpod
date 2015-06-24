@@ -108,37 +108,45 @@ pod_device test_device =
 //-------------------------------------------------------------------
 
 
-TEST_FUNCT(start_driver) {
+TEST_FUNCT(start_driver) 
+{
     printf("constructing driver, ");
 
-    CU_ASSERT_EQUAL(0, test_driver.calls.pod_construct( &test_driver ) );
+    //CU_ASSERT_EQUAL(0, test_driver.calls.pod_construct( &test_driver ) );
+    CU_ASSERT_EQUAL(0, pod_construct( &test_driver ) );
 
     printf("HW scan, ");
 
-    CU_ASSERT_EQUAL(0, test_driver.calls.pod_sense( &test_driver ) );
+    //CU_ASSERT_EQUAL(0, test_driver.calls.pod_sense( &test_driver ) );
+    CU_ASSERT_EQUAL(0, pod_sense( &test_driver ) );
 
     printf("activating driver, ");
 
-    CU_ASSERT_EQUAL(0, test_driver.calls.pod_activate( &test_driver ) );
-
+    //CU_ASSERT_EQUAL(0, test_driver.calls.pod_activate( &test_driver ) );
+    CU_ASSERT_EQUAL(0, pod_activate( &test_driver ) );
     
 }
 
-TEST_FUNCT(run_driver) {
+
+TEST_FUNCT(run_driver) 
+{
     printf("running driver\n");
     sleep(4);
 }
 
-TEST_FUNCT(stop_driver) {
 
+TEST_FUNCT(stop_driver) 
+{
 
     printf("deactivating driver, ");
 
-    CU_ASSERT_EQUAL(0, test_driver.calls.pod_deactivate( &test_driver ) );
+    //CU_ASSERT_EQUAL(0, test_driver.calls.pod_deactivate( &test_driver ) );
+    CU_ASSERT_EQUAL(0, pod_deactivate( &test_driver ) );
 
     printf("destructing driver, ");
 
-    CU_ASSERT_EQUAL(0, test_driver.calls.pod_destruct( &test_driver ) );
+    //CU_ASSERT_EQUAL(0, test_driver.calls.pod_destruct( &test_driver ) );
+    CU_ASSERT_EQUAL(0, pod_destruct( &test_driver ) );
 }
 
 void runSuite(void) {
