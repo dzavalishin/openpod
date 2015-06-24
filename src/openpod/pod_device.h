@@ -4,6 +4,12 @@
 #include "pod_properties.h"
 #include "pod_kernel_api.h"
 
+struct pod_driver;
+struct pod_device;
+struct pod_q;
+
+
+
 typedef enum pod_rq_status 
 { 
 	pod_rq_status_ok,
@@ -29,20 +35,27 @@ typedef struct pod_request
 	pod_rq_status	err;			// результат исполнения, 0 = ок
 
 	// Req struct part specific for request class and op id
-	void		*class_specific;
+	void		*op_arg;
 
 	// Driver will call this when done
 	void		(*done)( struct pod_request *rq );
 
 } pod_request;
 
+
+
 typedef struct pod_dev_f
 {
+
+	errno_t	(*enqueue)( struct pod_device *dev, pod_request *rq ); 
+	errno_t	(*dequeue)( struct pod_device *dev, pod_request *rq );
+	errno_t	(*fence)( struct pod_device *dev, pod_request *rq );
+	errno_t	(*raise_prio)( struct pod_device *dev, pod_request *rq, uint32_t io_prio );
+
+
 } pod_dev_f;
 
 
-struct pod_driver;
-struct pod_q;
 
 typedef struct pod_device
 {
@@ -77,8 +90,40 @@ typedef struct pod_device
 
 
 
+inline errno_t	pod_rq_enqueue( pod_device *dev, pod_request *rq )
+{
+	if( (dev == 0) || (dev->calls == 0) || (dev->calls->enqueue == 0 ) )
+		return EFAULT;
+
+	rq->err = pod_rq_status_unprocessed;
+
+	return dev->calls->enqueue( dev, rq );
+}
 
 
+inline errno_t	pod_rq_dequeue( pod_device *dev, pod_request *rq )
+{
+	if( (dev == 0) || (dev->calls == 0) || (dev->calls->dequeue == 0 ) )
+		return EFAULT;
+
+	return dev->calls->dequeue( dev, rq );
+}
+
+inline errno_t	pod_rq_fence( pod_device *dev, pod_request *rq )
+{
+	if( (dev == 0) || (dev->calls == 0) || (dev->calls->fence == 0 ) )
+		return EFAULT;
+
+	return dev->calls->fence( dev, rq );
+}
+
+inline errno_t	pod_rq_raise( pod_device *dev, pod_request *rq, uint32_t io_prio )
+{
+	if( (dev == 0) || (dev->calls == 0) || (dev->calls->raise_prio == 0 ) )
+		return EFAULT;
+
+	return dev->calls->raise_prio( dev, rq, io_prio );
+}
 
 
 

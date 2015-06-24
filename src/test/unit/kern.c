@@ -2,10 +2,64 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <openpod.h>
+#include <pthread.h>
 
+
+#include <openpod.h>
+#include <pod_io_video.h>
 
 // Bare bones implementation of OpenPOD kernel API
+
+
+void req_done_func( struct pod_request *rq )
+{
+	fprintf( stderr, "rq done\n" );
+	free(rq); // frees piggybacked arg too
+}
+
+
+
+
+static pthread_t req_thread = 0;
+
+static void *req_thread_func( void *arg )
+{
+	struct pod_device *dev = arg;
+	//struct pod_driver *drv = dev->drv;
+	errno_t	rc;
+
+	while(1)
+	{
+		sleep(1);
+
+		pod_request *rq = calloc( 1, sizeof(pod_request) + sizeof(struct pod_video_rq_mode) );
+		if( rq == 0 ) 
+		{
+			fprintf( stderr, "out of mem\n" );
+			break;
+		}
+
+		struct pod_video_rq_mode *rq_arg = ((void*)rq) + sizeof(pod_request);
+
+		rq->request_class	= POD_DEV_CLASS_VIDEO;
+		rq->operation		= pod_video_getmode;
+		rq->io_prio		= 0;
+		rq->op_arg		= rq_arg;
+		rq->done		= req_done_func;
+
+		rc = pod_rq_enqueue( dev, rq );
+		if( rc )
+		{
+			fprintf( stderr, "can't enqueue rq\n" );
+			free( rq );
+			break;
+		}
+
+	}
+
+	return 0;
+} 
+
 
 
 errno_t		pod_dev_link( struct pod_driver *drv, struct pod_device *dev )	// Report a new available device to the OS kernel
@@ -14,6 +68,10 @@ errno_t		pod_dev_link( struct pod_driver *drv, struct pod_device *dev )	// Repor
 	(void) dev;
 
 	fprintf( stderr, "Device link: 0x%p\n", dev );
+
+	if( req_thread == 0 )
+		pthread_create( &req_thread, NULL, &req_thread_func, dev );
+
 
 	// Empty - add dev to list? Do some requests?
 	return 0;

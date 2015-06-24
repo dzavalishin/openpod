@@ -14,6 +14,12 @@
 //
 //-------------------------------------------------------------------
 
+static errno_t	test_driver_enqueue( pod_device *dev, pod_request *rq ); 
+static errno_t	test_driver_dequeue( pod_device *dev, pod_request *rq );
+static errno_t	test_driver_fence( pod_device *dev, pod_request *rq );
+static errno_t	test_driver_raise( pod_device *dev, pod_request *rq, uint32_t io_prio );
+
+
 errno_t		test_driver_construct( struct pod_driver *drv );
 errno_t		test_driver_destruct( struct pod_driver *drv );
 
@@ -24,6 +30,14 @@ errno_t		test_driver_deactivate( struct pod_driver *drv );
 
 errno_t		test_driver_sense( struct pod_driver *drv );
 
+
+static pod_dev_f dev_func = 
+{
+	test_driver_enqueue,
+	test_driver_dequeue,
+	test_driver_fence,
+	test_driver_raise,
+};
 
 
 pod_driver test_driver = {
@@ -69,7 +83,7 @@ pod_device test_device =
 
 	&test_driver,
 
-	0, 	// dev io entry points
+	&dev_func, 	// dev io entry points
 
 	0, 	// no properties
 
@@ -106,6 +120,12 @@ TEST_FUNCT(start_driver) {
 
     
 }
+
+TEST_FUNCT(run_driver) {
+    printf("running driver\n");
+    sleep(4);
+}
+
 TEST_FUNCT(stop_driver) {
 
 
@@ -126,6 +146,7 @@ void runSuite(void) {
     CU_pSuite suite = CUnitCreateSuite("Driver lifecycle sequence");
     if (suite) {
         ADD_SUITE_TEST(suite, start_driver)
+        ADD_SUITE_TEST(suite, run_driver)
         ADD_SUITE_TEST(suite, stop_driver)
     }
 }
@@ -144,6 +165,42 @@ void runSuite(void) {
 
 
 
+static errno_t	test_driver_enqueue( pod_device *dev, pod_request *rq )
+{
+	(void) dev;
+	// Serve request - do it right now
+
+	rq->err = pod_rq_status_ok;
+	rq->done( rq );
+
+	return 0;
+}
+
+
+static errno_t	test_driver_dequeue( pod_device *dev, pod_request *rq )
+{
+	(void) dev;
+	(void) rq;
+
+	return ENOENT; // Too late, rq is done already (as we do anything syncronously)
+}
+
+static errno_t	test_driver_fence( pod_device *dev, pod_request *rq )
+{
+	(void) dev;
+	(void) rq;
+
+	return 0; // We have no q, so all requests are done in order
+}
+
+static errno_t	test_driver_raise( pod_device *dev, pod_request *rq, uint32_t io_prio )
+{
+	(void) dev;
+	(void) rq;
+	(void) io_prio;
+
+	return 0; // It's too late anyway, don't bother caller with error code.
+}
 
 
 

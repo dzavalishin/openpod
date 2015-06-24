@@ -2,7 +2,8 @@
 #define POD_IO_VIDEO_H
 
 #include "pod_types.h"
-#include "pod_rq.h"
+//#include "pod_rq.h"
+#include "pod_device.h"
 
 //*******************************************************************
 //
@@ -14,32 +15,32 @@
 
 
 // значение поля operation или индекс в таблицу методов class_interface
-enum pod_video_operartions 
+typedef enum pod_video_operartions 
 {
-	nop, 
-	getmode, setmode,
-	clear_all, clear, 
-	move, 
-	write, read, 
-	write_part, read_part
-};
+	pod_video_nop, 
+	pod_video_getmode, pod_video_setmode,
+	pod_video_clear_all, pod_video_clear, 
+	pod_video_move, 
+	pod_video_write, pod_video_read, 
+	pod_video_write_part, pod_video_read_part
+} pod_video_operartions;
 
 // Pixel format, pod_pixel_rgba is preferred
-enum pod_pixel_fmt 
+typedef enum pod_pixel_fmt 
 {
 	pod_pixel_rgb,		// 24 bit RGB
 	pod_pixel_rgba,		// 32 bit RGBA, A byte is ignored by HW
 	pod_pixel_r5g6b5,	// 16 bit, 5-6-5
 	pod_pixel_r5g5b5,	// 16 bit, 5-5-5
-};
+} pod_pixel_fmt;
 
 // bitbil flags, encode
 // buffer to screen copy mode. 
 // screen to buffer copy ignores flags and copies everything?
-enum pod_v_flags {
+typedef enum pod_v_flags {
 	pod_video_ignore_zbuffer,	// ignore z coordinate (but update z buffer)
 	pod_video_ignore_alpha,		// ignore A (aplha channel)
-};
+} pod_v_flags;
 
 
 
