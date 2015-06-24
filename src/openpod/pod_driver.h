@@ -47,7 +47,7 @@ typedef enum
 	pod_sleep_fast,		// Must take uSeconds to wake
 	pod_sleep_norm,		// Must take mSeconds to wake
 	pod_sleep_slow,		// Must take seconds to wake
-	pod_sleep_undefined,	// Can take forever (disk spin) to wake
+	pod_sleep_forever,	// Can take forever (disk spin) to wake
 } pod_sleep_level;
 
 
@@ -67,6 +67,9 @@ errno_t		(*pod_awake)( struct pod_driver *drv );
 } pod_dev_optional_f;
 
 
+typedef struct kernel_f
+{
+} kernel_f;
 
 //-------------------------------------------------------------------
 //
@@ -74,10 +77,14 @@ errno_t		(*pod_awake)( struct pod_driver *drv );
 //
 //-------------------------------------------------------------------
 
+#define POD_DRIVER_MAGIC	0xA601B702
+#define POD_DRIVER_VERSION	0, 1
+#define POD_DRIVER_ARCH_UNKNOWN	0, 0
 
 typedef struct pod_driver 
 {
-	char 			magic[4];	// magic number
+//	char 			magic[4];	// magic number
+	uint32_t		magic;
 
 	// Minor change means API is extended, but compatible
 	uint8_t			API_version_major; 
@@ -102,6 +109,9 @@ typedef struct pod_driver
 
 	pod_properties		*prop;
 
+	// private driverТs data structure
+	void			*private_data; 
+
 /**
  * таблица функций €дра дл€ драйвера - используетс€ если нельз€ пролинковать
  * напр€мую (функции замен€ютс€ матросами, которые через эту таблицу идут в
@@ -109,8 +119,6 @@ typedef struct pod_driver
 **/
 	kernel_f		*kernel_driver_api;	
 
-	// private driverТs data structure
-	void			*private_data; 
 
 } pod_driver;
 

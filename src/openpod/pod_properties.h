@@ -1,3 +1,6 @@
+#ifndef POD_PROPERTIES_H
+#define POD_PROPERTIES_H
+
 
 //*******************************************************************
 //
@@ -18,6 +21,7 @@ typedef enum
 struct pod_property;
 
 typedef struct pod_properties
+{
     //u_int32_t           prefix;         // 4-byte char prefix of this group, like 'dev.', 'gen.' or 'fsp.'
     //const char *          prefix;         // 4-byte char prefix of this group, like 'dev.', 'gen.' or 'fsp.'
 
@@ -76,9 +80,9 @@ errno_t pod_gen_listproperties( pod_properties *ps, int nProperty, char *pValue,
 
 struct pod_driver;
 
-errno_t gen_dev_listproperties( struct pod_driver *drv, int nProperty, char *pValue, int vlen );
-errno_t	gen_dev_getproperty( struct pod_driver *drv, const char *pName, char *pValue, int vlen );
-errno_t	gen_dev_setproperty( structpod_driver *drv, const char *pName, const char *pValue );
+errno_t gen_drv_listproperties( struct pod_driver *drv, int nProperty, char *pValue, int vlen );
+errno_t	gen_drv_getproperty( struct pod_driver *drv, const char *pName, char *pValue, int vlen );
+errno_t	gen_drv_setproperty( struct pod_driver *drv, const char *pName, const char *pValue );
 
 
 
@@ -99,3 +103,5 @@ errno_t	gen_dev_setproperty( struct pod_device *dev, const char *pName, const ch
 
 
 
+
+#endif // POD_PROPERTIES_H

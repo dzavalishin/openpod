@@ -25,7 +25,9 @@ typedef signed char		int8_t;
 typedef unsigned int		uint32_t;
 typedef signed int		int32_t;
 
+//typedef unsigned int		size_t;
 
+typedef unsigned int		physaddr_t;
 
 #endif // POD_SHORT_TYPES_DEFINED
 

@@ -11,7 +11,7 @@ ENDMACRO(ADD_MODULE file)
 FILE(GLOB C_FILES RELATIVE "${CMAKE_SOURCE_DIR}/suites" "${CMAKE_SOURCE_DIR}/suites/*.c")
 
 INCLUDE_DIRECTORIES ( "${CMAKE_SOURCE_DIR}" )
-INCLUDE_DIRECTORIES ( "../../../include" "../../../include/ia32" )
+INCLUDE_DIRECTORIES ( "../../../openpod" ".." )
 
 
 SET(CMAKE_C_FLAGS " -std=c99 -O3 -Wall -Wextra -Wimplicit  -I ../../openpod  -L../../libs/")

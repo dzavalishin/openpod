@@ -1,7 +1,31 @@
 
 
 #include "pod_types.h"
-#include "pod_driver.h"
+//#include "pod_driver.h"
+//#include "pod_device.h"
+
+
+struct pod_driver;
+struct pod_device;
+
+typedef struct pod_mutex
+{	
+	void *private_data;
+} pod_mutex;
+
+typedef struct pod_cond
+{
+	void *private_data;
+} pod_cond;
+
+typedef struct pod_thread
+{
+	union {
+		void 	*private_data;
+		int	system_thread_id;
+	};
+} pod_thread;
+
 
 // ------------------------------------------------------------------
 //
@@ -10,9 +34,9 @@
 // ------------------------------------------------------------------
 
 
-errno_t		pod_dev_link( pod_driver *drv, pod_device *dev );	// Report a new available device to the OS kernel
-errno_t		pod_dev_unlink( pod_driver *drv, pod_device *dev );	// Report device to be unavailable
-errno_t		pod_dev_event( pod_driver *drv, pod_device *dev );	// Tell about device event (error? state change?)
+errno_t		pod_dev_link( struct pod_driver *drv, struct pod_device *dev );	// Report a new available device to the OS kernel
+errno_t		pod_dev_unlink( struct pod_driver *drv, struct pod_device *dev );	// Report device to be unavailable
+errno_t		pod_dev_event( struct pod_driver *drv, struct pod_device *dev );	// Tell about device event (error? state change?)
 
 
 
@@ -23,8 +47,8 @@ errno_t		pod_dev_event( pod_driver *drv, pod_device *dev );	// Tell about device
 //
 // ------------------------------------------------------------------
 
-errno_t		pod_kernel_thread_start( pod_thread_t *tid, void (*thread_func)(void *), void *thread_func_arg );
-errno_t		pod_kernel_thread_kill( pod_thread_t tid );
+errno_t		pod_kernel_thread_start( pod_thread *tid, void (*thread_func)(void *), void *thread_func_arg );
+errno_t		pod_kernel_thread_kill( pod_thread tid );
 
 // TODO threadlets/dpc?
 
@@ -38,20 +62,20 @@ errno_t		pod_kernel_thread_kill( pod_thread_t tid );
 
 
 
-errno_t		pod_kernel_create_mutex( pod_mutex_t **mutex );		// allocate and init
-errno_t		pod_kernel_init_mutex( pod_mutex_t *mutex );		// init static one
-errno_t		pod_kernel_destroy_mutex( pod_mutex_t *mutex );	
+errno_t		pod_kernel_create_mutex( pod_mutex **mutex );		// allocate and init
+errno_t		pod_kernel_init_mutex( pod_mutex *mutex );		// init static one
+errno_t		pod_kernel_destroy_mutex( pod_mutex *mutex );	
 
-errno_t		pod_kernel_lock_mutex( pod_mutex_t *mutex );
-errno_t		pod_kernel_unlock_mutex( pod_mutex_t *mutex );
+errno_t		pod_kernel_lock_mutex( pod_mutex *mutex );
+errno_t		pod_kernel_unlock_mutex( pod_mutex *mutex );
 
 
-errno_t		pod_kernel_create_cond( pod_cond_t **cond );		// allocate and init
-errno_t		pod_kernel_init_cond( pod_cond_t *cond );		// init static one
-errno_t		pod_kernel_destroy_cond( pod_cond_t *cond );
+errno_t		pod_kernel_create_cond( pod_cond **cond );		// allocate and init
+errno_t		pod_kernel_init_cond( pod_cond *cond );		// init static one
+errno_t		pod_kernel_destroy_cond( pod_cond *cond );
 
-errno_t		pod_kernel_wait_cond( pod_cond_t *cond, pod_mutex_t *mutex );
-errno_t		pod_kernel_signal_cond( pod_cond_t *cond );
+errno_t		pod_kernel_wait_cond( pod_cond *cond, pod_mutex *mutex );
+errno_t		pod_kernel_signal_cond( pod_cond *cond );
 
 
 // ------------------------------------------------------------------
@@ -61,7 +85,7 @@ errno_t		pod_kernel_signal_cond( pod_cond_t *cond );
 // ------------------------------------------------------------------
 
 errno_t		pod_log_print( int loglevel, const char **format, ... );
-void 		pod_panic(const char *fmt, ...)
+void 		pod_panic(const char *fmt, ...);
 
 
 // ------------------------------------------------------------------
