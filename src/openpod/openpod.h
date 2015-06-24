@@ -6,6 +6,7 @@
 
 #include "pod_dev_class.h"
 #include "pod_driver.h"
+#include "pod_device.h"
 
 //#include "pod_properties.h"
 //#include ""

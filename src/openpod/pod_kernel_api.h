@@ -1,3 +1,6 @@
+#ifndef POD_KERNEL_API_H
+#define POD_KERNEL_API_H
+
 
 
 #include "pod_types.h"
@@ -33,10 +36,12 @@ typedef struct pod_thread
 //
 // ------------------------------------------------------------------
 
+// Event types
+#define		POD_EVENT_LOG		0
 
 errno_t		pod_dev_link( struct pod_driver *drv, struct pod_device *dev );	// Report a new available device to the OS kernel
 errno_t		pod_dev_unlink( struct pod_driver *drv, struct pod_device *dev );	// Report device to be unavailable
-errno_t		pod_dev_event( struct pod_driver *drv, struct pod_device *dev );	// Tell about device event (error? state change?)
+errno_t		pod_dev_event( struct pod_driver *drv, struct pod_device *dev, int event_id, void *event_info );	// Tell about device event (error? state change?)
 
 
 
@@ -123,3 +128,5 @@ errno_t		pod_unmap_mem( physaddr_t mem, void *vaddr, int flags );
 errno_t		pod_wire_mem( void *mem, unsigned int nbytes ); 		// Make sure memory is paged in and non-pageable. Can block! Don't call in pod_rq_start!
 errno_t		pod_unwire_mem( void *mem, unsigned int nbytes ); 
 
+
+#endif // POD_KERNEL_API_H

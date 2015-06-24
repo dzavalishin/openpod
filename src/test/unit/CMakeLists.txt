@@ -5,10 +5,10 @@ set(CMAKE_LEGACY_CYGWIN_WIN32 0) # Remove when CMake >= 2.8.4 is required
 
 PROJECT("runtest")
 
-SET(CMAKE_C_FLAGS " -std=c99 -O3 -Wall -Wextra -Wimplicit -L../../libs/")
+SET(CMAKE_C_FLAGS " -std=c99 -O3 -Wall -Wextra -Wimplicit -L../../libs/ -I../../openpod -I.")
 
 INCLUDE_DIRECTORIES ( "/usr/include" )
-ADD_EXECUTABLE(runtests main.c utils.c panic.c)
+ADD_EXECUTABLE(runtests main.c utils.c panic.c kern.c)
 #TARGET_LINK_LIBRARIES(runtests kern )
 TARGET_LINK_LIBRARIES(runtests cunit dl )
 

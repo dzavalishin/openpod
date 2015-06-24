@@ -1,5 +1,5 @@
 MACRO(ADD_MODULE file)
-    ADD_LIBRARY( ${file} MODULE ${file}.c ../utils.c ../panic.c )
+    ADD_LIBRARY( ${file} MODULE ${file}.c ../utils.c ../panic.c ../kern.c )
 #    TARGET_LINK_LIBRARIES( ${file} cunit kern phantom win )
     TARGET_LINK_LIBRARIES( ${file} cunit )
     SET_TARGET_PROPERTIES( ${file} PROPERTIES
