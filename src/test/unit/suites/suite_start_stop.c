@@ -304,6 +304,7 @@ errno_t		test_driver_sense( struct pod_driver *drv )
 {
 
 	drv->private_data = &test_device;
+	struct pod_device *dev	= drv->private_data; // we are very simple
 
 	POD_DEV_STATE_SET( dev, POD_DEV_STATE_INIT );
 

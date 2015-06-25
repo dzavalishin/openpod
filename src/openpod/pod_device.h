@@ -77,8 +77,8 @@ typedef struct pod_dev_f
 
 #define POD_DEV_REPORT_STATE( ___dev ) do { int state_copy = (___dev)->state_flags; pod_dev_event( drv, dev, POD_EVENT_STATE, &state_copy ); } while(0)
 
-#define POD_DEV_STATE_SET( ___dev, ___stfl ) do { (___dev)->state_flags |= (___stfl); POD_DEV_REPORT_STATE( ___dev )  } while(0)
-#define POD_DEV_STATE_CLEAR( ___dev, ___stfl ) do { (___dev)->state_flags &= ~(___stfl); POD_DEV_REPORT_STATE( ___dev ) } while(0)
+#define POD_DEV_STATE_SET( ___dev, ___stfl ) do { (___dev)->state_flags |= (___stfl); POD_DEV_REPORT_STATE( ___dev );  } while(0)
+#define POD_DEV_STATE_CLEAR( ___dev, ___stfl ) do { (___dev)->state_flags &= ~(___stfl); POD_DEV_REPORT_STATE( ___dev ); } while(0)
 
 #define POD_DEV_STATE_CHECK( ___dev, ___stfl ) ( (  ((___dev)->state_flags) & (___stfl) ) != 0 )
 

@@ -6,10 +6,13 @@ default::
 	$(MAKE) all
 
 install::
+	$(MAKE) all
 	# TODO
+	$(MAKE) -C libs install
 
 all::
-	# TODO
+	$(MAKE) -C libs all
+	$(MAKE) -C test all
 
 clean::
 	$(MAKE) -C libs clean

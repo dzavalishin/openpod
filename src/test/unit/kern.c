@@ -116,6 +116,10 @@ errno_t		pod_dev_event( struct pod_driver *drv, struct pod_device *dev, int even
 		fprintf( stderr, "Device says: '%s'\n", (const char *)event_info );
 		break;
 
+	case POD_EVENT_STATE:
+		fprintf( stderr, "Device state is: %x\n", *((int *)event_info) );
+		break;
+
 	default:
 		return EINVAL;	// Unknown event type
 	}

@@ -36,12 +36,32 @@ typedef struct pod_thread
 //
 // ------------------------------------------------------------------
 
-// Event types
-#define		POD_EVENT_LOG		0	// Log a message about the device, pointer to msg string
-#define		POD_EVENT_STATE		0	// Report driver state change, pointer to int state_flags (readonly)
 
 errno_t		pod_dev_link( struct pod_driver *drv, struct pod_device *dev );	// Report a new available device to the OS kernel
 errno_t		pod_dev_unlink( struct pod_driver *drv, struct pod_device *dev );	// Report device to be unavailable
+
+// ------------------------------------------------------------------
+//
+// Device state reporting
+//
+// With pod_dev_event driver reports state change and can send log messages tied to a specific device.
+//
+// Basically this callback can be safely ignored by kernel. Implement empty function and you're ok.
+// TODO add default implementation to lib, with weak linkage, so that it will be linked only if kernel has no specific one
+//
+// ------------------------------------------------------------------
+
+
+// Event types
+#define		POD_EVENT_LOG		0	// Log a message about the device, pointer to msg string
+#define		POD_EVENT_STATE		1	// Report driver state change, pointer to int state_flags (readonly)
+
+// TODO
+//#define		POD_EVENT_BLK_IOERR		2	// Report io error, must provide detailed info such as block, retry count, etc
+//#define		POD_EVENT_CLASS_SPECIFIC_ERR		3	// Report device class specific error, detailed
+//#define		POD_EVENT_INTERRUPT		4	// Report device activity (must be requested)
+//#define		POD_EVENT_DISCONNECT	5	// Report loss of a device - to differ from driver stop
+
 errno_t		pod_dev_event( struct pod_driver *drv, struct pod_device *dev, int event_id, void *event_info );	// Tell about device event (error? state change?)
 
 
