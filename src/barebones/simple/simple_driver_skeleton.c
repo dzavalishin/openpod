@@ -14,16 +14,19 @@
 
 errno_t		simple_driver_sense( struct pod_driver *drv )
 {
-	// TODO detect hardware here
+	drv->private_data = &test_device;
+
+	POD_DEV_STATE_SET( dev, POD_DEV_STATE_INIT );
 
 #if 0
+	// TODO detect hardware here
 	if( not_detected )
 	{
-		drv->private_data = 0;
 		return ENOENT;
 	}
 #endif
-	drv->private_data = &test_device;
+
+	POD_DEV_STATE_SET( dev, POD_DEV_STATE_FOUND );
 
 	return 0;
 }

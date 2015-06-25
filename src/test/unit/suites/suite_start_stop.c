@@ -265,7 +265,8 @@ errno_t		test_driver_activate( struct pod_driver *drv )
 
 	if( dev == 0 ) return ENOENT;
 
-	// TODO update flag in device struct?
+	POD_DEV_STATE_CLEAR( dev, POD_DEV_STATE_PAUSE );
+	POD_DEV_STATE_SET( dev, POD_DEV_STATE_LINKED );
 
 	rc = pod_dev_link( drv, dev );
 	if( rc ) return rc;
@@ -285,15 +286,15 @@ errno_t		test_driver_deactivate( struct pod_driver *drv )
 
 	if( dev == 0 ) return ENOENT;
 
+
 	rc = pod_dev_event( drv, dev, POD_EVENT_LOG, "device deactivated" );
 	if( rc ) return rc;
-
-	// TODO update flag in device struct?
-
 
 	rc = pod_dev_unlink( drv, dev );
 	if( rc ) return rc;
 
+	//POD_DEV_STATE_SET( dev, POD_DEV_STATE_PAUSE );
+	POD_DEV_STATE_CLEAR( dev, POD_DEV_STATE_LINKED );
 
 	return 0;
 }
@@ -301,9 +302,14 @@ errno_t		test_driver_deactivate( struct pod_driver *drv )
 
 errno_t		test_driver_sense( struct pod_driver *drv )
 {
-	// 'find' hardware
 
 	drv->private_data = &test_device;
+
+	POD_DEV_STATE_SET( dev, POD_DEV_STATE_INIT );
+
+	// 'find' hardware
+
+	POD_DEV_STATE_SET( dev, POD_DEV_STATE_FOUND );
 
 	return 0;
 }

@@ -19,7 +19,8 @@ errno_t		simple_driver_activate( struct pod_driver *drv )
 
 	if( dev == 0 ) return ENOENT;
 
-	// TODO update flag in device struct?
+	POD_DEV_STATE_CLEAR( dev, POD_DEV_STATE_PAUSE );
+	POD_DEV_STATE_SET( dev, POD_DEV_STATE_LINKED );
 
 	rc = pod_dev_link( drv, dev );
 	if( rc ) return rc;
@@ -43,12 +44,11 @@ errno_t		simple_driver_deactivate( struct pod_driver *drv )
 	rc = pod_dev_event( drv, dev, POD_EVENT_LOG, "device deactivated" );
 	if( rc ) return rc;
 
-	// TODO update flag in device struct?
-
-
 	rc = pod_dev_unlink( drv, dev );
 	if( rc ) return rc;
 
+	//POD_DEV_STATE_SET( dev, POD_DEV_STATE_PAUSE );
+	POD_DEV_STATE_CLEAR( dev, POD_DEV_STATE_LINKED );
 
 	return 0;
 }

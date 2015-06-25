@@ -14,6 +14,20 @@
 //*******************************************************************
 
 
+//-------------------------------------------------------------------
+//
+// Constants
+//
+//-------------------------------------------------------------------
+
+// Driver supports boolean alpha channel (blits if alpha byte is not zero)
+#define POD_CLASS_VIDEO_FLAG_HAS_APLHA	(1<<0)
+// Driver supports fractional alpha channel (blit mixes pixel according to alpha byte value)
+#define POD_CLASS_VIDEO_FLAG_HAS_FAPLHA	(1<<0)
+// Driver supports Z buffer (blits if Z coordinate of pixel we paint is > than Z coordinate of onscreen pixel )
+#define POD_CLASS_VIDEO_FLAG_HAS_ZBUF	(1<<2)
+
+
 // значение поля operation или индекс в таблицу методов class_interface
 typedef enum pod_video_operartions 
 {
@@ -45,11 +59,11 @@ typedef enum pod_v_flags {
 
 
 
-//*******************************************************************
+//-------------------------------------------------------------------
 //
 // Struct to fill into the class_specific field of request
 //
-//*******************************************************************
+//-------------------------------------------------------------------
 
 // TODO move defines to rq hdr - BUG, must return rq
 #define create_op_rq( __type, __class, __op ) \

@@ -37,7 +37,8 @@ typedef struct pod_thread
 // ------------------------------------------------------------------
 
 // Event types
-#define		POD_EVENT_LOG		0
+#define		POD_EVENT_LOG		0	// Log a message about the device, pointer to msg string
+#define		POD_EVENT_STATE		0	// Report driver state change, pointer to int state_flags (readonly)
 
 errno_t		pod_dev_link( struct pod_driver *drv, struct pod_device *dev );	// Report a new available device to the OS kernel
 errno_t		pod_dev_unlink( struct pod_driver *drv, struct pod_device *dev );	// Report device to be unavailable
