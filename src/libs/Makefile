@@ -1,12 +1,14 @@
 include ../config.mk
 
 all::
-	# TODO
-#	$(MAKE) -C openpod_rq all
+	$(MAKE) -C openpod_helpers	all
+#	$(MAKE) -C openpod_rq 		all
 #	$(MAKE) test
 
 install::
 	# TODO
 
 clean::
-#	$(MAKE) -C openpod_rq clean
+	$(MAKE) -C openpod_helpers	clean
+#	$(MAKE) -C openpod_rq		clean
+	-rm *.a

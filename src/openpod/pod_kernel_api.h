@@ -34,6 +34,8 @@ typedef struct pod_thread
 //
 // Device registration
 //
+// Required.
+//
 // ------------------------------------------------------------------
 
 
@@ -71,6 +73,8 @@ errno_t		pod_dev_event( struct pod_driver *drv, struct pod_device *dev, int even
 //
 // Threads
 //
+// Optional.
+//
 // ------------------------------------------------------------------
 
 errno_t		pod_kernel_thread_start( pod_thread *tid, void (*thread_func)(void *), void *thread_func_arg );
@@ -78,11 +82,30 @@ errno_t		pod_kernel_thread_kill( pod_thread tid );
 
 // TODO threadlets/dpc?
 
-// TODO timers?
+
+// ------------------------------------------------------------------
+//
+// Timers
+//
+// Required.
+//
+// ------------------------------------------------------------------
+
+#define POD_TIMER_PERIODIC		(1<<0)
+// Call will be postponed as long as spinlock is still taken
+//#define POD_TIMER_CHECKLOCK		(1<<2)
+
+// Request timer_func to be called in msec milliseconds
+errno_t		pod_kernel_timer_start( int *timer_id, int msec, int timer_flags, void (*timer_func)(void *), void *timer_func_arg );
+// Reset timer. Returns ENOENT if timer does not exist (one-shot timer kills itself automatically).
+errno_t		pod_kernel_timer_stop( int timer_id );
+
 
 // ------------------------------------------------------------------
 //
 // Sync
+//
+// Optional, must be implemented if threads exist.
 //
 // ------------------------------------------------------------------
 
@@ -106,17 +129,37 @@ errno_t		pod_kernel_signal_cond( pod_cond *cond );
 
 // ------------------------------------------------------------------
 //
-// Logging and panic
+// Spinlocks
+//
+// Required.
 //
 // ------------------------------------------------------------------
 
-errno_t		pod_log_print( int loglevel, const char **format, ... );
-void 		pod_panic(const char *fmt, ...);
+struct pod_spinlock;
+
+// Push interrupt mask, disable interrupts, if SMP - check/take spin lock
+errno_t		pod_kernel_spin_lock( struct pod_spinlock *l );
+// Pop interrupt mask, if SMP - release spin lock
+errno_t		pod_kernel_spin_unlock( struct pod_spinlock *l );
+
+
+// ------------------------------------------------------------------
+//
+// Logging and panic
+//
+// Required.
+//
+// ------------------------------------------------------------------
+
+errno_t		pod_log_print( int loglevel, const char *format, ... );
+void 		pod_panic(const char *format, ...);
 
 
 // ------------------------------------------------------------------
 //
 // Memory and address space
+//
+// Required. TODO do we need map/unmap/vadd allocation? What to do with MMU-less systems?
 //
 // ------------------------------------------------------------------
 

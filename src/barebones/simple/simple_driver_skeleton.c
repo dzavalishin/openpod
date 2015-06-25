@@ -19,7 +19,8 @@ errno_t		simple_driver_sense( struct pod_driver *drv )
 	POD_DEV_STATE_SET( dev, POD_DEV_STATE_INIT );
 
 #if 0
-	// TODO detect hardware here
+	// Your code to detect hardware here
+
 	if( not_detected )
 	{
 		return ENOENT;
@@ -45,15 +46,13 @@ static errno_t	simple_driver_enqueue( pod_device *dev, pod_request *rq )
 
 	//printf( "rq->request_class = %d, dev->class_id = %d\n", rq->request_class, dev->class_id );
 
-//	if( rq->request_class != dev->class_id ) goto einval;
-
 	switch( rq->operation )
 	{
 	case pod_video_getmode:
 		{
 		struct pod_video_rq_mode *rq_arg = rq->op_arg;
 
-		// TODO do actual non-blocking io here
+		// Your code to do actual non-blocking io here
 
 		rq_arg->x_size = 1024;
 		rq_arg->y_size = 768;
@@ -62,10 +61,9 @@ static errno_t	simple_driver_enqueue( pod_device *dev, pod_request *rq )
 		}
 		break;
 
-	// TODO add and implement other class ops here
+	// Implement other class ops here
 
 	default:
-einval:
 		rq->err = pod_rq_status_param;
 		if( rq->done ) rq->done( rq );
 

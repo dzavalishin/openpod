@@ -1,6 +1,7 @@
 #ifndef POD_PROPERTIES_H
 #define POD_PROPERTIES_H
 
+#include <pod_types.h>
 
 //*******************************************************************
 //

@@ -59,9 +59,29 @@ typedef struct pod_request
 
 
 
+// Create request
+#define create_op_rq( __rqpp, __type, __class, __op ) \
+    do { \
+        pod_request *rq = pod_malloc( sizeof(pod_request) + sizeof(__type) ); \
+        rq->class_specific = ((void*)rq) + sizeof(pod_request); \
+        rq->requset_class = (__class); \
+        rq->operation = (__op); \
+        rq->io_prio = 0x1000; \
+        rq->err = not_started;\
+        rq->done = 0;         \
+		*(__rqpp) = rq;			\
+        } while(0)
+
+// Access class_specific field
+#define rq_specific( __rq, __type ) \
+	( (__type *) ((__rq)->class_specific) )
 
 
 
+errno_t	pod_rq_enqueue( struct pod_device *dev, pod_request *rq );
+errno_t	pod_rq_dequeue( struct pod_device *dev, pod_request *rq );
+errno_t	pod_rq_fence( struct pod_device *dev, pod_request *rq );
+errno_t	pod_rq_raise( struct pod_device *dev, pod_request *rq, uint32_t io_prio );
 
 
 

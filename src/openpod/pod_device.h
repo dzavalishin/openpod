@@ -26,7 +26,6 @@ typedef struct pod_dev_f
 
 #define POD_DEVICE_MAGIC 0xDEFF00A3
 
-// TODO describe state flags in spec
 
 // Device is initialized (constructed)
 #define POD_DEV_STATE_INIT		(1<<0)
@@ -86,7 +85,7 @@ typedef struct pod_device
 
 
 
-
+#if 0
 
 //-------------------------------------------------------------------
 //
@@ -162,7 +161,7 @@ inline errno_t	pod_rq_raise( pod_device *dev, pod_request *rq, uint32_t io_prio 
 	return dev->calls->raise_prio( dev, rq, io_prio );
 }
 
-
+#endif
 
 
 

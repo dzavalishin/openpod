@@ -3,6 +3,9 @@
 #include "pod_local_types.h"
 
 
+// Get just one type definition
+#define __need_size_t
+#include <stddef.h>
 
 
 #ifndef POD_ERRNO_T_DEFINED

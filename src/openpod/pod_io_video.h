@@ -65,20 +65,6 @@ typedef enum pod_v_flags {
 //
 //-------------------------------------------------------------------
 
-// TODO move defines to rq hdr - BUG, must return rq
-#define create_op_rq( __type, __class, __op ) \
-    do { \
-        pod_request *rq = pod_malloc( sizeof(pod_request) + sizeof(__type) ); \
-        rq->class_specific = ((void*)rq) + sizeof(pod_request); \
-        rq->requset_class = (__class); \
-        rq->operation = (__op); \
-        rq->io_prio = 0x1000; \
-        rq->err = not_started;\
-        rq->done = 0;         \
-        } while(0)
-
-#define rq_specific( __rq, __type ) \
-	( (__type *) ((__rq)->class_specific) )
 
 // clear
 struct pod_video_rq_sqare 

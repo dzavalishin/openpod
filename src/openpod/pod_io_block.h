@@ -16,9 +16,9 @@
 // значение поля operation или индекс в таблицу методов class_interface
 enum pod_block_operartions 
 {
-	nop, 
-	read, write, 
-	trim		// SSD specific
+	pod_block_nop, 
+	pod_block_read, pod_block_write, 
+	pod_block_trim		// SSD specific
 };
 
 // trim
