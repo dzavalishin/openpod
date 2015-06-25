@@ -201,14 +201,12 @@ static errno_t	test_driver_enqueue( pod_device *dev, pod_request *rq )
 	default:
 einval:
 		rq->err = pod_rq_status_param;
-		rq->done( rq );
-
-		return 0;
+		goto done;
 	}
 
 	rq->err = pod_rq_status_ok;
-	rq->done( rq );
-
+done:
+	if( rq->done ) rq->done( rq );
 	return 0;
 }
 

@@ -97,6 +97,13 @@ inline errno_t	pod_rq_enqueue( pod_device *dev, pod_request *rq )
 	if( (dev == 0) || (dev->calls == 0) || (dev->calls->enqueue == 0 ) )
 		return EFAULT;
 
+	if( rq->request_class != dev->class_id ) 
+	{
+		rq->err = pod_rq_status_param;
+		if( rq->done ) rq->done( rq );
+		return 0;
+	}
+
 	rq->err = pod_rq_status_unprocessed;
 
 	return dev->calls->enqueue( dev, rq );
