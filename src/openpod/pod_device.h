@@ -84,6 +84,18 @@ typedef struct pod_device
 
 
 
+
+
+
+
+//-------------------------------------------------------------------
+//
+// Request methods
+//
+//-------------------------------------------------------------------
+
+
+
 inline errno_t	pod_rq_enqueue( pod_device *dev, pod_request *rq )
 {
 	if( (dev == 0) || (dev->calls == 0) || (dev->calls->enqueue == 0 ) )
@@ -149,6 +161,9 @@ inline errno_t	pod_rq_raise( pod_device *dev, pod_request *rq, uint32_t io_prio 
 
 	return dev->calls->raise_prio( dev, rq, io_prio );
 }
+
+
+
 
 
 
