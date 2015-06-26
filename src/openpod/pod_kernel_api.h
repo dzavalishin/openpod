@@ -58,6 +58,11 @@ errno_t		pod_dev_unlink( struct pod_driver *drv, struct pod_device *dev );	// Re
 #define		POD_EVENT_LOG		0	// Log a message about the device, pointer to msg string
 #define		POD_EVENT_STATE		1	// Report driver state change, pointer to int state_flags (readonly)
 
+// Report device as soon as it was detected, during pod_sense/pod_probe, so kernel can decide whether it wants
+// to start corresponding driver. This is especially critical for video drivers because kernel needs to choose
+// between different possible ones to choose the best one.
+#define		POD_EVENT_PREVIEW	2	
+
 // TODO
 //#define		POD_EVENT_BLK_IOERR		2	// Report io error, must provide detailed info such as block, retry count, etc
 //#define		POD_EVENT_CLASS_SPECIFIC_ERR		3	// Report device class specific error, detailed

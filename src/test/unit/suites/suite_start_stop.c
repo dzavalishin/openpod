@@ -312,6 +312,10 @@ errno_t		test_driver_sense( struct pod_driver *drv )
 
 	POD_DEV_STATE_SET( dev, POD_DEV_STATE_FOUND );
 
+	//rc = 
+	pod_dev_event( drv, dev, POD_EVENT_PREVIEW, 0 );
+	//if( rc ) return rc;
+
 	return 0;
 }
 

@@ -66,7 +66,7 @@ typedef struct pod_device
 
 	pod_properties		*prop;
 
-	void				*class_interface; // dev class specific interface
+	void				(**class_interface)(struct pod_device *dev, void *arg); // dev class specific interface
 	void				*private_data;
 
 	// ----------------------------------------------------------------------
@@ -82,87 +82,10 @@ typedef struct pod_device
 
 
 
+// Call dev (class/op specific) function from class_interface. This is 
+// an interface identical to what is available via requests, but syncronous.
 
-
-
-#if 0
-
-//-------------------------------------------------------------------
-//
-// Request methods
-//
-//-------------------------------------------------------------------
-
-
-
-inline errno_t	pod_rq_enqueue( pod_device *dev, pod_request *rq )
-{
-	if( (dev == 0) || (dev->calls == 0) || (dev->calls->enqueue == 0 ) )
-		return EFAULT;
-
-	if( rq->request_class != dev->class_id ) 
-	{
-		rq->err = pod_rq_status_param;
-		if( rq->done ) rq->done( rq );
-		return 0;
-	}
-
-	if( !POD_DEV_STATE_CHECK( dev, POD_DEV_STATE_INIT ) )
-		return ENXIO;
-
-	if( !POD_DEV_STATE_CHECK( dev, POD_DEV_STATE_FOUND ) )
-		return ENODEV;
-
-	rq->err = pod_rq_status_unprocessed;
-
-	return dev->calls->enqueue( dev, rq );
-}
-
-
-inline errno_t	pod_rq_dequeue( pod_device *dev, pod_request *rq )
-{
-	if( (dev == 0) || (dev->calls == 0) || (dev->calls->dequeue == 0 ) )
-		return EFAULT;
-
-	if( !POD_DEV_STATE_CHECK( dev, POD_DEV_STATE_INIT ) )
-		return ENXIO;
-
-	if( !POD_DEV_STATE_CHECK( dev, POD_DEV_STATE_FOUND ) )
-		return ENODEV;
-
-	return dev->calls->dequeue( dev, rq );
-}
-
-inline errno_t	pod_rq_fence( pod_device *dev, pod_request *rq )
-{
-	if( (dev == 0) || (dev->calls == 0) || (dev->calls->fence == 0 ) )
-		return EFAULT;
-
-	if( !POD_DEV_STATE_CHECK( dev, POD_DEV_STATE_INIT ) )
-		return ENXIO;
-
-	if( !POD_DEV_STATE_CHECK( dev, POD_DEV_STATE_FOUND ) )
-		return ENODEV;
-
-	return dev->calls->fence( dev, rq );
-}
-
-inline errno_t	pod_rq_raise( pod_device *dev, pod_request *rq, uint32_t io_prio )
-{
-	if( (dev == 0) || (dev->calls == 0) || (dev->calls->raise_prio == 0 ) )
-		return EFAULT;
-
-	if( !POD_DEV_STATE_CHECK( dev, POD_DEV_STATE_INIT ) )
-		return ENXIO;
-
-	if( !POD_DEV_STATE_CHECK( dev, POD_DEV_STATE_FOUND ) )
-		return ENODEV;
-
-	return dev->calls->raise_prio( dev, rq, io_prio );
-}
-
-#endif
-
+errno_t pod_dev_method( pod_device *dev, int op_id, void *param );
 
 
 
