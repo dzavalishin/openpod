@@ -1,7 +1,12 @@
 #include <openpod.h>
 #include <pod_io_video.h>
 
-pod_device			*preselected_video_driver; // TODO .h
+// There will be no such headers in a real kernel, of course.
+#include <stdio.h>
+#include <errno.h>
+
+
+pod_driver *preselected_video_driver; // TODO .h
 struct pod_video_rq_mode	preselected_video_mode;
 
 extern pod_device	*best_video_driver; // TODO .h
@@ -40,7 +45,7 @@ pod_dev_event( struct pod_driver *drv, struct pod_device *dev, int event_id, voi
 
 			if( 0 == preselected_video_driver ) // First one is better for sure :)
 			{
-better;
+better:
 				preselected_video_driver = drv;
 				preselected_video_mode = m;
 				break;

@@ -12,9 +12,11 @@ install::
 
 all::
 	$(MAKE) -C libs all
+	$(MAKE) -C examples all
 	$(MAKE) -C test all
 
 clean::
 	$(MAKE) -C libs clean
 	$(MAKE) -C test clean
+	$(MAKE) -C examples clean
 
