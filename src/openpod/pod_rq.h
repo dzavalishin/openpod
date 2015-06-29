@@ -80,7 +80,7 @@ typedef struct pod_request
 
 errno_t	pod_rq_enqueue( struct pod_device *dev, pod_request *rq );
 errno_t	pod_rq_dequeue( struct pod_device *dev, pod_request *rq );
-errno_t	pod_rq_fence( struct pod_device *dev, pod_request *rq );
+errno_t	pod_rq_fence( struct pod_device *dev );
 errno_t	pod_rq_raise( struct pod_device *dev, pod_request *rq, uint32_t io_prio );
 
 

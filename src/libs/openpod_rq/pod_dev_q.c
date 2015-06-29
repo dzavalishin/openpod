@@ -1,11 +1,21 @@
-#include "pod_dev_q.h"
+#include <pod_driver.h>
+#include <pod_device.h>
+#include <pod_dev_q.h>
+#include <pod_queues.h>
+
+#include <errno.h>
 
 // Sketch code
+
+static errno_t pod_dev_q_refuse( pod_device *dev, pod_request *rq );
+static void pod_dev_q_runner( void *arg );
 
 
 static void pod_dev_q_log_rc( pod_device *dev, const char *descr, int rc )
 {
-    pod_kernel_log( "dev %s: %s, rc = %d", dev->name, descr, rc );
+    // TODO dev name
+    //pod_kernel_log( "dev %s: %s, rc = %d", dev->name, descr, rc );
+    pod_kernel_log( "drv %s: %s, rc = %d", dev->drv->name, descr, rc );
 }
 
 
@@ -13,23 +23,25 @@ static void pod_dev_q_log_rc( pod_device *dev, const char *descr, int rc )
 errno_t	pod_dev_q_construct( pod_device *dev )
 {
 	// Don't attempt serving requests until constructed
-	dev->calls.start = pod_dev_q_refuse;
+	dev->calls->enqueue = pod_dev_q_refuse;
 
-	dev->calls.dequeue = pod_dev_q_dequeue;
-	dev->calls.fence = pod_dev_q_fence;
-	dev->calls.raise = pod_dev_q_raise;
+	dev->calls->dequeue = pod_dev_q_dequeue;
+	dev->calls->fence = pod_dev_q_fence;
+	dev->calls->raise_prio = pod_dev_q_raise;
 
 	dev->curr_rq = 0;
 
 	// TODO use destruct to cleanup
 	dev->rq_run_mutex = 0;
 	dev->rq_run_cond = 0; 
-	dev->rq_run_thread = 0;
+        //dev->rq_run_thread.system_thread_id = 0;
+        POD_THREAD_NOT_NULL( dev->rq_run_thread );
 	dev->default_r_q = 0;
 
 	errno_t rc;
 
-	dev->flags |= OPENPOD_DEV_THREAD_RUN;
+	//dev->flags |= OPENPOD_DEV_INTERNAL_THREAD_RUN;
+        POD_DEV_INTERNAL_SET( dev, OPENPOD_DEV_INTERNAL_THREAD_RUN );
 
 	rc = pod_q_construct( &(dev->default_r_q) );
 	if( rc ) return rc;
@@ -45,7 +57,7 @@ errno_t	pod_dev_q_construct( pod_device *dev )
 
 	// Initialized, let them send us requests
 
-	dev->calls.start = pod_dev_q_enqueue;
+	dev->calls->enqueue = pod_dev_q_enqueue;
 
 	return 0;
 
@@ -57,7 +69,7 @@ err_thread:
 err_cond:
 	// TODO no rc check - at least log it
 	// pod_dev_q_log_rc( dev, "destroy cond", 
-	pod_kernel_destroy_cond( &(dev->rq_run_cond) );
+	pod_kernel_destroy_cond( dev->rq_run_cond );
 
 err_mutex:
 	pod_dev_q_log_rc( dev, "destroy mutex", 
@@ -68,8 +80,10 @@ err_q:
 	// pod_dev_q_log_rc( dev, "destroy q", 
 	pod_q_destruct( dev->default_r_q );
 
-	dev->flags &= ~OPENPOD_DEV_THREAD_RUN;
-	dev->flags &= ~OPENPOD_DEV_THREAD_RUNNING;
+	//dev->flags &= ~OPENPOD_DEV_INTERNAL_THREAD_RUN;
+	//dev->flags &= ~OPENPOD_DEV_INTERNAL_THREAD_RUNNING;
+        POD_DEV_INTERNAL_CLEAR( dev, OPENPOD_DEV_INTERNAL_THREAD_RUN );
+        POD_DEV_INTERNAL_CLEAR( dev, OPENPOD_DEV_INTERNAL_THREAD_RUNNING );
 
 	return rc;
 
@@ -78,11 +92,12 @@ err_q:
 errno_t	pod_dev_q_destruct( pod_device *dev )
 {
 	// Stop serving requests
-	dev->calls.start = pod_dev_q_refuse;
+	dev->calls->enqueue = pod_dev_q_refuse;
 
 	// Request thread to stop and check it
-	dev->flags &= ~OPENPOD_DEV_THREAD_RUN;
-	pod_kernel_signal_cond( dev->rq_run_cond );
+	//dev->flags &= ~OPENPOD_DEV_INTERNAL_THREAD_RUN;
+        POD_DEV_INTERNAL_CLEAR( dev, OPENPOD_DEV_INTERNAL_THREAD_RUN );
+        pod_kernel_signal_cond( dev->rq_run_cond );
 
 	// TODO wait for thread to die - use mutex?
 
@@ -101,7 +116,7 @@ errno_t	pod_dev_q_destruct( pod_device *dev )
 	    // refuse request
 	    if( next_rq )
 	    {
-		next_rq->err = stopped;
+		next_rq->err = pod_rq_status_stopped;
 	        // TODO ERR can block frv from running,
 	        // need some thread pool to run done?
 	        next_rq->done( next_rq );
@@ -112,7 +127,7 @@ errno_t	pod_dev_q_destruct( pod_device *dev )
 
 
 
-	if( dev->rq_run_thread )
+	if( POD_THREAD_NOT_NULL( dev->rq_run_thread ) )
 		pod_dev_q_log_rc( dev, "destroy thread", pod_kernel_thread_kill( dev->rq_run_thread ) );
 
 	if( dev->rq_run_cond )
@@ -127,7 +142,7 @@ errno_t	pod_dev_q_destruct( pod_device *dev )
 }
 
 // Replacement for a pod_dev_q_enqueue - just refuse all incoming rq
-errno_t pod_dev_q_refuse( pod_device *dev, pod_request *rq )
+static errno_t pod_dev_q_refuse( pod_device *dev, pod_request *rq )
 {
 	return EINVAL; // TODO confirm and document ret codes
 }
@@ -146,13 +161,16 @@ errno_t	pod_dev_q_iodone( pod_device *dev )
 }
 
 // Thread that executes requests from q and calls callbacks
-errno_t	pod_dev_q_runner( pod_device *dev )
+void	pod_dev_q_runner( void *arg )
 {
+    pod_device *dev = arg;
+
     errno_t rc;
 
-    dev->flags |= OPENPOD_DEV_THREAD_RUNNING;
+    //dev->flags |= OPENPOD_DEV_INTERNAL_THREAD_RUNNING;
+    POD_DEV_INTERNAL_SET( dev, OPENPOD_DEV_INTERNAL_THREAD_RUNNING );
 
-    while( dev->flags & OPENPOD_DEV_THREAD_RUN )
+    while( POD_DEV_INTERNAL_CHECK( dev, OPENPOD_DEV_INTERNAL_THREAD_RUN ) )
     {
 	pod_request *next_rq;
 	pod_request *prev_rq;
@@ -173,7 +191,7 @@ errno_t	pod_dev_q_runner( pod_device *dev )
 	if( next_rq )
 	{
 	    dev->curr_rq = next_rq;
-	    dev->default_start_rq( next_rq );
+	    dev->default_start_rq( dev, next_rq );
 	}
 
 	if( prev_rq )
@@ -185,7 +203,8 @@ errno_t	pod_dev_q_runner( pod_device *dev )
 
     }
 
-    dev->flags &= ~OPENPOD_DEV_THREAD_RUNNING;
+    //dev->flags &= ~OPENPOD_DEV_INTERNAL_THREAD_RUNNING;
+    POD_DEV_INTERNAL_CLEAR( dev, OPENPOD_DEV_INTERNAL_THREAD_RUNNING );
 
 }
 
@@ -214,14 +233,14 @@ errno_t	pod_dev_q_dequeue( pod_device *dev, pod_request *rq )
     errno_t rc = 0;
     pod_kernel_lock_mutex( dev->rq_run_mutex );
 
-    if( rq->err != waiting )
+    if( rq->err != pod_rq_status_unprocessed )
         rc = ENOENT;
 
     // TODO checks to be on q internally?
     if( !rc )
         {
         rc = pod_q_dequeue( dev->default_r_q, rq );
-        if( !rc ) rq->err = dequeued;
+        if( !rc ) rq->err = pod_rq_status_dequeued;
         }
     pod_kernel_unlock_mutex( dev->rq_run_mutex );
     return rc;
@@ -250,7 +269,7 @@ errno_t	pod_dev_q_raise( pod_device *dev, pod_request *rq, uint32_t io_prio )
     // Strictly speaking we have to check pod_q_is_on_q( pod_q *q, pod_request *rq );
     // Practically no one gives a shit if request is already done, so don't bother
 
-    rq->prio = io_prio;
+    rq->io_prio = io_prio;
     // TODO skip sort if rq is done
     rc = pod_q_sort( dev->default_r_q, rq_prio_cmp ); 
 

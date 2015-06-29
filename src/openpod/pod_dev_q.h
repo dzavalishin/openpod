@@ -2,6 +2,7 @@
 #define POD_DEV_Q_H
 
 #include "pod_types.h"
+#include "pod_device.h"
 
 //*******************************************************************
 //

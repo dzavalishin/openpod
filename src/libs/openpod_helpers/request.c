@@ -48,7 +48,7 @@ errno_t	pod_rq_dequeue( pod_device *dev, pod_request *rq )
 	return dev->calls->dequeue( dev, rq );
 }
 
-errno_t	pod_rq_fence( pod_device *dev, pod_request *rq )
+errno_t	pod_rq_fence( pod_device *dev )
 {
 	if( (dev == 0) || (dev->calls == 0) || (dev->calls->fence == 0 ) )
 		return EFAULT;
@@ -59,7 +59,7 @@ errno_t	pod_rq_fence( pod_device *dev, pod_request *rq )
 	if( !POD_DEV_STATE_CHECK( dev, POD_DEV_STATE_FOUND ) )
 		return ENODEV;
 
-	return dev->calls->fence( dev, rq );
+	return dev->calls->fence( dev );
 }
 
 errno_t	pod_rq_raise( pod_device *dev, pod_request *rq, uint32_t io_prio )

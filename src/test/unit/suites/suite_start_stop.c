@@ -19,7 +19,7 @@
 
 static errno_t	test_driver_enqueue( pod_device *dev, pod_request *rq ); 
 static errno_t	test_driver_dequeue( pod_device *dev, pod_request *rq );
-static errno_t	test_driver_fence( pod_device *dev, pod_request *rq );
+static errno_t	test_driver_fence( pod_device *dev );
 static errno_t	test_driver_raise( pod_device *dev, pod_request *rq, uint32_t io_prio );
 
 
@@ -97,6 +97,8 @@ pod_device test_device =
 	0,	// request we do now
 	0,	// thread used to run requests
 	0,	// triggered to run next request
+	0,	// mutex
+	0,	// rq start func
 
 };
 
@@ -219,10 +221,10 @@ static errno_t	test_driver_dequeue( pod_device *dev, pod_request *rq )
 	return ENOENT; // Too late, rq is done already (as we do anything syncronously)
 }
 
-static errno_t	test_driver_fence( pod_device *dev, pod_request *rq )
+static errno_t	test_driver_fence( pod_device *dev )
 {
 	(void) dev;
-	(void) rq;
+//	(void) rq;
 
 	return 0; // We have no q, so all requests are done in order
 }

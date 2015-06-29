@@ -29,6 +29,9 @@ typedef struct pod_thread
 	};
 } pod_thread;
 
+#define POD_THREAD_NOT_NULL( __t ) ( (__t).system_thread_id )
+#define POD_THREAD_SET_NULL( __t ) ( (__t).system_thread_id = 0 )
+
 
 // ------------------------------------------------------------------
 //

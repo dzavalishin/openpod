@@ -17,7 +17,7 @@ typedef struct pod_dev_f
 
 	errno_t	(*enqueue)( struct pod_device *dev, pod_request *rq ); 
 	errno_t	(*dequeue)( struct pod_device *dev, pod_request *rq );
-	errno_t	(*fence)( struct pod_device *dev, pod_request *rq );
+	errno_t	(*fence)( struct pod_device *dev );
 	errno_t	(*raise_prio)( struct pod_device *dev, pod_request *rq, uint32_t io_prio );
 
 
@@ -49,6 +49,14 @@ typedef struct pod_dev_f
 #define POD_DEV_STATE_CHECK( ___dev, ___stfl ) ( (  ((___dev)->state_flags) & (___stfl) ) != 0 )
 
 
+#define OPENPOD_DEV_INTERNAL_THREAD_RUNNING	(1<<0)
+#define OPENPOD_DEV_INTERNAL_THREAD_RUN		(1<<1)
+
+
+#define POD_DEV_INTERNAL_SET( ___dev, ___stfl ) do { (___dev)->internal_flags |= (___stfl);   } while(0)
+#define POD_DEV_INTERNAL_CLEAR( ___dev, ___stfl ) do { (___dev)->internal_flags &= ~(___stfl);  } while(0)
+#define POD_DEV_INTERNAL_CHECK( ___dev, ___stfl ) ( (  ((___dev)->internal_flags) & (___stfl) ) != 0 )
+
 
 typedef struct pod_device
 {
@@ -57,7 +65,7 @@ typedef struct pod_device
 
 	uint8_t				class_id;
 	uint8_t				class_flags; // Class specific flags, 
-	uint8_t				pad1;
+	uint8_t				internal_flags; // Not exposed as state change to kernel
 	uint8_t				state_flags; // Device state
 
 	struct pod_driver	*drv;
@@ -75,9 +83,10 @@ typedef struct pod_device
 	// Request queue, used by pod_dev_q_ functions
 	struct pod_q		*default_r_q;		// default request q
 	pod_request			*curr_rq;		// request we do now
-	pod_thread			*rq_run_thread;	// thread used to run requests
+	pod_thread			rq_run_thread;	// thread used to run requests
 	pod_cond			*rq_run_cond;	// triggered to run next request
-
+	pod_mutex			*rq_run_mutex;
+	errno_t				(*default_start_rq)( struct pod_device *dev, pod_request *rq ); // start executing an rq
 } pod_device;
 
 

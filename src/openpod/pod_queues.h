@@ -18,7 +18,7 @@ typedef struct pod_qe
 	struct pod_qe		*next;
 	struct pod_qe		*prev;
 
-	pod_request		*rq
+	pod_request		*rq;
 
 } pod_qe;
 
@@ -50,10 +50,11 @@ errno_t		pod_q_dequeue( pod_q *q, pod_request *rq );
 
 // Add fence, all the requests enqueued after will be sorted
 // separately and won't mix with previous ones
-errno_t		pod_q_fence( pod_q *q, pod_request *rq ); 
+errno_t		pod_q_fence( pod_q *q ); 
 
 // Sort taking fences in account
-errno_t		pod_q_sort( pod_q *q, pod_request *rq, int (*cmp)( pod_request *rqa, pod_request *rqb) ); 
+//errno_t		pod_q_sort( pod_q *q, pod_request *rq, int (*cmp)( pod_request *rqa, pod_request *rqb) ); 
+errno_t		pod_q_sort( pod_q *q, int (*cmp)( pod_request *rqa, pod_request *rqb) ); 
 
 
 // Request prioty compare func., can be used with sort above
