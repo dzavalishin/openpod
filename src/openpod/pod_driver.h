@@ -69,6 +69,9 @@ errno_t		(*pod_awake)( struct pod_driver *drv );
 
 typedef struct kernel_f
 {
+	errno_t		(*pod_dev_link)( struct pod_driver *drv, struct pod_device *dev );
+	errno_t		(*pod_dev_unlink)( struct pod_driver *drv, struct pod_device *dev );
+
 } kernel_f;
 
 //-------------------------------------------------------------------

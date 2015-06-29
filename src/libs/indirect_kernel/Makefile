@@ -1,9 +1,11 @@
 include ../../config.mk
 
+LIB=libopenpod_kernel.a
+
 # TODO move pod_local_types.h from here and tests to some common place
 CFLAGS += -I../../openpod -I../..
 
-all:	libopenpod_helpers.a
+all:	$(LIB)
 
 install::
 	# TODO
@@ -15,6 +17,6 @@ clean::
 	-rm *.~h
 
 
-libopenpod_helpers.a: pod_dev_event.o request.o driver.o
+$(LIB): link.o
 	ar crsv $@ *.o
 	cp $@ ..
