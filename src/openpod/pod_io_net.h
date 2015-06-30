@@ -16,9 +16,9 @@
 // значение поля operation или индекс в таблицу методов class_interface
 enum pod_video_operartions 
 {
-	nop, get_mac_addr,
-	mac_send, mac_recv,
-	//ip_send, ip_recv, 
+    nop, get_mac_addr,
+    mac_send, mac_recv,
+    //ip_send, ip_recv, 
 };
 
 
@@ -33,8 +33,8 @@ enum pod_video_operartions
 // get_mac_addr
 struct pod_net_rq_mac
 {
-	uint8_t	mac_len;
-	uint8_t	mac[POD_NET_MAX_MAC];
+    uint8_t mac_len;
+    uint8_t mac[POD_NET_MAX_MAC];
 };
 
 

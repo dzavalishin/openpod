@@ -21,18 +21,18 @@
 
 
 
-errno_t	pod_dev_q_construct( pod_device *dev );
-errno_t	pod_dev_q_destruct( pod_device *dev );
-errno_t	pod_dev_q_enqueue( pod_device *dev, pod_request *rq );
-errno_t	pod_dev_q_dequeue( pod_device *dev, pod_request *rq );
-errno_t	pod_dev_q_fence( pod_device *dev ); 
-errno_t	pod_dev_q_raise( pod_device *dev, pod_request *rq, uint32_t io_prio );
+errno_t pod_dev_q_construct( pod_device *dev );
+errno_t pod_dev_q_destruct( pod_device *dev );
+errno_t pod_dev_q_enqueue( pod_device *dev, pod_request *rq );
+errno_t pod_dev_q_dequeue( pod_device *dev, pod_request *rq );
+errno_t pod_dev_q_fence( pod_device *dev ); 
+errno_t pod_dev_q_raise( pod_device *dev, pod_request *rq, uint32_t io_prio );
 
 // должна быть реализована в драйвере, запускает запрос на исполнение 
-//errno_t	pod_dev_q_exec( pod_device *dev, pod_request *rq );
+//errno_t   pod_dev_q_exec( pod_device *dev, pod_request *rq );
 
 // реализована в фреймворке, вызывается кодом драйвера по завершении в/в, можно из прерывания
-errno_t	pod_dev_q_iodone( pod_device *dev );
+errno_t pod_dev_q_iodone( pod_device *dev );
 
 
 

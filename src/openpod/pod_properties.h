@@ -40,7 +40,7 @@ typedef struct pod_properties
 
 typedef struct pod_property {
     pod_property_type_t type;
-    const char 		*name;
+    const char 			*name;
     size_t              offset;
     void                *valp;
 
