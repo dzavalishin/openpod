@@ -130,6 +130,18 @@ TEST_FUNCT(start_driver)
 }
 
 
+// Doesnt link, skip for now. Separate ADA test suite?
+# if 0
+void openpod__ada_print_drv( pod_driver *drv );
+
+TEST_FUNCT(ada_driver) 
+{
+    printf("printing driver struct from ADA\n");
+    openpod__ada_print_drv( &test_driver );
+}
+#endif
+
+
 TEST_FUNCT(run_driver) 
 {
     printf("running driver\n");
@@ -159,6 +171,7 @@ void runSuite(void) {
     CU_pSuite suite = CUnitCreateSuite("Driver lifecycle sequence");
     if (suite) {
         ADD_SUITE_TEST(suite, start_driver)
+//        ADD_SUITE_TEST(suite, ada_driver)
         ADD_SUITE_TEST(suite, run_driver)
         ADD_SUITE_TEST(suite, stop_driver)
     }
