@@ -8,7 +8,7 @@
 #include "utils.h"
 
 #include <openpod.h>
-//#include <pod_device.h>
+#include <pod_deffunc.h>
 #include <pod_io_video.h>
 
 //-------------------------------------------------------------------
@@ -32,6 +32,24 @@ errno_t		test_driver_deactivate( struct pod_driver *drv );
 
 
 errno_t		test_driver_sense( struct pod_driver *drv );
+
+
+
+static errno_t		test_device_io_getmode( pod_device *dev, void *arg );
+
+static errno_t		(*test_driver_class_interface[])(struct pod_device *dev, void *arg) =
+{
+	0, // nop
+	test_device_io_getmode,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+};
 
 
 static pod_dev_f dev_func = 
@@ -200,13 +218,17 @@ static errno_t	test_driver_enqueue( pod_device *dev, pod_request *rq )
 
 	//if( rq->request_class != dev->class_id ) goto einval;
 
-	// TODO return pod_default_enqueue( dev, rq );
-
+#if 1
+	return pod_default_enqueue( dev, rq );
+#else
 	switch( rq->operation )
 	{
 	case pod_video_getmode:
 		{
 		struct pod_video_rq_mode *rq_arg = rq->op_arg;
+
+		// TODO
+		//rc = simple_device_io_getmode( dev, rq->op_arg );
 
 		rq_arg->x_size = 1024;
 		rq_arg->y_size = 768;
@@ -225,6 +247,7 @@ static errno_t	test_driver_enqueue( pod_device *dev, pod_request *rq )
 done:
 	if( rq->done ) rq->done( rq );
 	return 0;
+#endif
 }
 
 
@@ -322,6 +345,7 @@ errno_t		test_driver_sense( struct pod_driver *drv )
 
 	drv->private_data = &test_device;
 	struct pod_device *dev	= drv->private_data; // we are very simple
+	dev->class_interface = test_driver_class_interface;
 
 	POD_DEV_STATE_SET( dev, POD_DEV_STATE_INIT );
 
@@ -338,4 +362,18 @@ errno_t		test_driver_sense( struct pod_driver *drv )
 
 
 
+static errno_t		
+test_device_io_getmode( pod_device *dev, void *arg )
+{
+	struct pod_video_rq_mode *m = arg;
+	(void) dev;
+	// Your code to do actual non-blocking io here
+
+	m->x_size = 1024;
+	m->y_size = 768;
+	m->buf_fmt = pod_pixel_rgba;
+	m->vbuf = 0; // no direct access to video buffer
+
+	return 0;
+}
 

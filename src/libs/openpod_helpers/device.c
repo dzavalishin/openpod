@@ -18,7 +18,7 @@ errno_t pod_dev_method( pod_device *dev, int op_id, void *param )
 
 	if( (op_id < 0) || (dev->class_interface == 0) ) return ENOSYS;
 
-	void (*class_func)(void *arg); // dev class specific interface
+	errno_t (*class_func)(pod_device *dev, void *arg); // dev class specific interface
 
 	// TODO check op id > max possible
 

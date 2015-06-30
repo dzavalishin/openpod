@@ -74,7 +74,7 @@ typedef struct pod_device
 
     pod_properties      *prop;
 
-    void                (**class_interface)(struct pod_device *dev, void *arg); // dev class specific interface
+    errno_t             (**class_interface)(struct pod_device *dev, void *arg); // dev class specific interface
     void                *private_data;
 
     // ----------------------------------------------------------------------
