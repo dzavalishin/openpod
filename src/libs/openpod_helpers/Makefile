@@ -14,10 +14,10 @@ clean::
 	-rm *.~c
 	-rm *.~h
 
-
-libopenpod_helpers.a: pod_dev_event.o request.o driver.o openpod.o
+# turned ADA off - openpod.o
+libopenpod_helpers.a: pod_dev_event.o request.o driver.o 
 	ar crsv $@ *.o
 	cp $@ ..
 
 
-openpod.o: openpod.adb
+#openpod.o: openpod.adb
