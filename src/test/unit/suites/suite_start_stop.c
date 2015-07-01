@@ -55,18 +55,34 @@ static errno_t		(*test_driver_class_interface[])(struct pod_device *dev, void *a
 
 static int 	property_blit_queue_timeout = 100;
 static char *	property_display_device_name = 0;
+static errno_t  ro_getf(struct pod_properties *ps, void *context, size_t offset, void *vp, char *val, size_t len); // { strlcpy( val, "getf_value", len ); return 0; }
+static errno_t  ro_convertf(struct pod_properties *ps, void *context, size_t offset, void *vp, char *val, size_t len); // { strlcpy( val, "getf_value", len ); return 0; }
+
+static int 	wo_property = 0;
+static int 	wo_activate_cout = 0;
+static errno_t  wo_setf(struct pod_properties *ps, void *context, size_t offset, void *vp, const char *val);
+static errno_t  wo_activate(struct pod_properties *ps, void *context, size_t offset, void *vp );
+
+static int 	valp_properties[2] = { 1, 2 };
+//! Get pointer to property value
+static void *	valp(struct pod_properties *ps, void *context, size_t offset );
 
 static pod_property plist[] =
 {
 	{	pt_int32,	"blit_queue_timeout",	0, &property_blit_queue_timeout, 0, 0, 0, 0 },
 	{	pt_mstring,	"display_device_name",	0, &property_display_device_name, 0, 0, 0, 0 },
+        {	pt_mstring,	"ro_func",		0, 0, 0, 0, 0, ro_getf },
+        {	pt_mstring,	"ro_func_conv",		0, &property_blit_queue_timeout, 0, 0, 0, ro_convertf },
+        {	pt_mstring,	"wo_func",		0, &wo_property, 0, wo_activate, wo_setf, 0 },
+        {	pt_int32,	"valp_1",		1, 0, 0, 0, 0, 0 },
+        {	pt_int32,	"valp_2",		2, 0, 0, 0, 0, 0 },
 };
 
 static pod_properties props =
 {
 	plist,
-	sizeof(plist)/sizeof(pod_property),
-	0 // TODO no get func yet
+        sizeof(plist)/sizeof(pod_property),
+        valp
 };
 
 
@@ -183,7 +199,7 @@ TEST_FUNCT(use_driver_properties)
 	//errno_t	rc;
         char buf[128];
         // TODO test pod_gen_listproperties
-        // TODO test property setf()/getf()/activate(), properties valp()
+        // TODO test combined valp()/get/set/activate
 
 	// Int
 
@@ -205,6 +221,40 @@ TEST_FUNCT(use_driver_properties)
         //printf( "property_display_device_name = '%s'\n", property_display_device_name );
         //printf( "display_device_name = '%s'\n", buf );
 
+        // Readonly, through property value get func
+
+        CU_ASSERT_EQUAL(0,  pod_drv_getproperty( &test_driver, "ro_func", buf, sizeof(buf) ) );
+        CU_ASSERT_STRING_EQUAL( buf, "getf_value" );
+
+        CU_ASSERT_EQUAL(0,  pod_drv_getproperty( &test_driver, "ro_func_conv", buf, sizeof(buf) ) );
+        CU_ASSERT_STRING_EQUAL( buf, "ro_convertf='200'" );
+
+        // Write only, set func, activate func
+
+        CU_ASSERT_EQUAL(0, wo_property );
+        CU_ASSERT_EQUAL(0, wo_activate_cout );
+
+        CU_ASSERT_EQUAL(EINVAL, pod_drv_setproperty( &test_driver, "wo_func", "Elbrus 4K" ) );
+
+        CU_ASSERT_EQUAL(0, wo_property );
+        CU_ASSERT_EQUAL(0, wo_activate_cout );
+
+        CU_ASSERT_EQUAL(0,  	pod_drv_setproperty( &test_driver, "wo_func", "33" ) );
+
+        CU_ASSERT_EQUAL(33, wo_property );
+        CU_ASSERT_EQUAL(1, wo_activate_cout );
+        
+
+        // Using ofset and valp func
+
+        CU_ASSERT_EQUAL(0,  pod_drv_getproperty( &test_driver, "valp_1", buf, sizeof(buf) ) );
+        CU_ASSERT_STRING_EQUAL( buf, "1" );
+        //printf( "valp_1 = '%s'\n", buf );
+
+        CU_ASSERT_EQUAL(0,  pod_drv_getproperty( &test_driver, "valp_2", buf, sizeof(buf) ) );
+        CU_ASSERT_STRING_EQUAL( buf, "2" );
+        //printf( "valp_2 = '%s'\n", buf );
+        
 }
 
 TEST_FUNCT(run_driver) 
@@ -424,4 +474,76 @@ test_device_io_getmode( pod_device *dev, void *arg )
 
 	return 0;
 }
+
+
+// Driver properties
+
+static errno_t
+ro_getf(struct pod_properties *ps, void *context, size_t offset, void *vp, char *val, size_t len)
+{
+    (void) ps;
+    (void) vp;
+    (void) context;
+    (void) offset;
+
+    strlcpy( val, "getf_value", len ); return 0;
+}
+
+
+static errno_t  ro_convertf(struct pod_properties *ps, void *context, size_t offset, void *vp, char *val, size_t len)
+{
+    (void) ps;
+//    (void) vp;
+    (void) context;
+    (void) offset;
+
+    snprintf( val, len, "ro_convertf='%d'", *((int*)vp) );
+    return 0;
+}
+
+
+static errno_t  wo_setf(struct pod_properties *ps, void *context, size_t offset, void *vp, const char *val)
+{
+    (void) ps;
+    (void) context;
+    (void) offset;
+
+    u_int32_t *ip = vp;
+
+    if( 1 != sscanf( val, "%d", ip ) )
+        return EINVAL;
+
+    return 0;
+}
+
+static errno_t  wo_activate(struct pod_properties *ps, void *context, size_t offset, void *vp )
+{
+    (void) ps;
+    (void) vp;
+    (void) context;
+    (void) offset;
+
+    wo_activate_cout++;
+
+    return 0;
+}
+
+static void *
+valp(struct pod_properties *ps, void *context, size_t offset )
+{
+    (void) ps;
+    (void) context;
+
+    switch(offset)
+    {
+    case 1:
+    case 2:
+        return valp_properties+offset-1;
+    }
+
+    return 0;
+}
+
+
+
 
