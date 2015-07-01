@@ -13,9 +13,8 @@ static void pod_dev_q_runner( void *arg );
 
 static void pod_dev_q_log_rc( pod_device *dev, const char *descr, int rc )
 {
-    // TODO dev name
-    //pod_kernel_log( "dev %s: %s, rc = %d", dev->name, descr, rc );
-    pod_kernel_log( "drv %s: %s, rc = %d", dev->drv->name, descr, rc );
+    if( rc == 0 ) return;
+    pod_kernel_log( "drv %s dev %s: %s, rc = %d", dev->drv->name, dev->name, descr, rc );
 }
 
 
@@ -63,27 +62,25 @@ errno_t	pod_dev_q_construct( pod_device *dev )
 
 
 err_thread:
-	// TODO no rc check - at least log it
-	pod_kernel_thread_kill( dev->rq_run_thread );
+	pod_dev_q_log_rc( dev, "kill thread", 
+        pod_kernel_thread_kill( dev->rq_run_thread ) );
 
 err_cond:
-	// TODO no rc check - at least log it
-	// pod_dev_q_log_rc( dev, "destroy cond", 
-	pod_kernel_destroy_cond( dev->rq_run_cond );
+	pod_dev_q_log_rc( dev, "destroy cond", 
+	    pod_kernel_destroy_cond( dev->rq_run_cond ) );
 
 err_mutex:
 	pod_dev_q_log_rc( dev, "destroy mutex", 
 	    pod_kernel_destroy_mutex( dev->rq_run_mutex ) );
 
 err_q:
-	// TODO no rc check - at least log it
-	// pod_dev_q_log_rc( dev, "destroy q", 
-	pod_q_destruct( dev->default_r_q );
+	pod_dev_q_log_rc( dev, "destroy q", 
+		pod_q_destruct( dev->default_r_q ) );
 
 	//dev->flags &= ~OPENPOD_DEV_INTERNAL_THREAD_RUN;
 	//dev->flags &= ~OPENPOD_DEV_INTERNAL_THREAD_RUNNING;
-        POD_DEV_INTERNAL_CLEAR( dev, OPENPOD_DEV_INTERNAL_THREAD_RUN );
-        POD_DEV_INTERNAL_CLEAR( dev, OPENPOD_DEV_INTERNAL_THREAD_RUNNING );
+    POD_DEV_INTERNAL_CLEAR( dev, OPENPOD_DEV_INTERNAL_THREAD_RUN );
+    POD_DEV_INTERNAL_CLEAR( dev, OPENPOD_DEV_INTERNAL_THREAD_RUNNING );
 
 	return rc;
 

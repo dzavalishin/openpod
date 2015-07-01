@@ -1,5 +1,7 @@
 #include <openpod.h>
 
+#include "pod_kernel_globals.h"
+
 // ------------------------------------------------------------------
 //
 // Start/stop driver
@@ -37,9 +39,7 @@ POD_DOALL( destruct )
 
 POD_DOALL( sense )
 
-// When your kernel is ready to use drivers, call pod_activate_all.
 
-POD_DOALL( activate )
 
 // During graceful shutdown call pod_deactivate_all and pod_destruct_all.
 // If driver is dynamically loaded, call pod_destruct for that driver. 
@@ -47,25 +47,64 @@ POD_DOALL( activate )
 POD_DOALL( deactivate )
 
 
+// When your kernel is ready to use drivers, call pod_activate_all.
+//
+// NB. There are two problems with this code.
+//
+// 1. If preselected video driver fails, we must cycle once again through all
+//    the video drives and attempt all others in order. Or, better, have list
+//    of video drivers sorted by their preferredness.
+//
+// 2. Frankly, class_id can be POD_DEV_CLASS_MULTIPLE. if such a driver has 
+//    video device, it will be started.
 
-/*
 
-void
-pod_construct_all(void) __attribute__((destructor))
-{
-	POD_FOREACH( pod_drivers, pod_construct );
+void                 
+pod_activate_all(void)
+{                    
+    int i; 
+
+    for( i = 0; i < POD_NDRIVERS; i++ ) 
+    {
+        // Start just selected video driver
+        if( pod_drivers[i]->class_id == POD_DEV_CLASS_VIDEO )
+        {
+            // Have no selection for some reason? Attempt first video driver we met
+            if( 0 == preselected_video_driver )
+                preselected_video_driver = pod_drivers[i];
+
+            if( pod_drivers[i] != preselected_video_driver )
+                continue;
+
+            // Video driver actiovation failed? Attempt next one!
+            if( pod_activate( pod_drivers[i] ) ) 
+                preselected_video_driver = 0;
+
+        }
+        else
+            pod_activate( pod_drivers[i] ); 
+    }
 }
 
-void
-pod_construct_all(void) __attribute__((constructor))
-{
-	POD_FOREACH( pod_drivers, pod_construct );
-}
 
-void
-pod_construct_all(void) __attribute__((destructor))
-{
-	POD_FOREACH( pod_drivers, pod_construct );
-}
 
-*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

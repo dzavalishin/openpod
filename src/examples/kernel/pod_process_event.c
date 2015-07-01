@@ -1,15 +1,16 @@
 #include <openpod.h>
 #include <pod_io_video.h>
 
-// There will be no such headers in a real kernel, of course.
 #include <stdio.h>
 #include <errno.h>
 
+#include "pod_kernel_globals.h"
 
-pod_driver *preselected_video_driver; // TODO .h
+
+pod_driver *preselected_video_driver;
 struct pod_video_rq_mode	preselected_video_mode;
 
-extern pod_device	*best_video_driver; // TODO .h
+//extern pod_device	*active_video_driver;
 
 
 // ------------------------------------------------------------------

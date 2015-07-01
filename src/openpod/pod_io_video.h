@@ -48,14 +48,15 @@ typedef enum pod_pixel_fmt
     pod_pixel_r5g5b5,   // 16 bit, 5-5-5
 } pod_pixel_fmt;
 
-// bitbil flags, encode
-// buffer to screen copy mode. 
+// bitbil flags, encode buffer to screen copy mode. 
 // screen to buffer copy ignores flags and copies everything?
-typedef enum pod_v_flags {
-    pod_video_ignore_zbuffer,   // ignore z coordinate (but update z buffer)
-    pod_video_ignore_alpha,     // ignore A (aplha channel)
-} pod_v_flags;
+//typedef enum pod_v_flags {
+//    pod_video_ignore_zbuffer,   // ignore z coordinate (but update z buffer)
+//    pod_video_ignore_alpha,     // ignore A (aplha channel)
+//} pod_v_flags;
 
+#define POD_VIDEO_IGNORE_Z  (1<<0)	// ignore z coordinate (but update z buffer)
+#define POD_VIDEO_IGNORE_A  (1<<1)  // ignore A byte (aplha channel)
 
 
 
@@ -90,7 +91,7 @@ struct pod_video_rq_rw
     uint32_t    x_size, y_size;
 
     uint32_t    z;
-    pod_v_flags flags;
+    uint32_t    flags;
 
     char        *buf;
 
@@ -108,7 +109,7 @@ struct pod_video_rq_rw_part
     uint32_t    move_x_size, move_y_size;   // size of sqare to move
 
     uint32_t    z;              // z position
-    pod_v_flags flags;
+    uint32_t    flags;
 
     char        *buf;
 

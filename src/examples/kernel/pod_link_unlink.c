@@ -1,5 +1,7 @@
 #include <openpod.h>
 
+#include "pod_kernel_globals.h"
+
 // ------------------------------------------------------------------
 //
 // Link/unlink device.
@@ -9,7 +11,7 @@
 //
 // ------------------------------------------------------------------
 
-pod_device	*best_video_driver;
+pod_device	*active_video_driver;
 
 
 // Report a new available device to the OS kernel
@@ -23,17 +25,15 @@ errno_t		pod_dev_link( struct pod_driver *drv, struct pod_device *dev )
 	switch( dev->class_id )
 	{
 	case POD_DEV_CLASS_VIDEO:
-		if( best_video_driver == 0 ) { best_video_driver = dev; break; }
-
-		// TODO get possible video mode, compare, choose best, make sure unchoosen video drivers get no activate		
+		if( active_video_driver == 0 ) { active_video_driver = dev; break; }
 		break;
 
 	case POD_DEV_CLASS_NET:
-		// TODO register a new network interface using given device
+		// Your code - register a new network interface using given device
 		break;
 
 	case POD_DEV_CLASS_BLOCK:
-		// TODO register a new disk using given device
+		// Your code - register a new disk device
 		break;
 	}
 
@@ -54,12 +54,12 @@ errno_t		pod_dev_unlink( struct pod_driver *drv, struct pod_device *dev )
 		break;
 
 	case POD_DEV_CLASS_NET:
-		// TODO deregister corresponding network interface 
+		// Your code - deregister corresponding network interface 
 		// find_net_if_by_dev( dev ); ... stop and kill if...
 		break;
 
 	case POD_DEV_CLASS_BLOCK:
-		// TODO do all we need when we loose disk 
+		// Your code - do all we need when we loose disk 
 		break;
 	}
 
