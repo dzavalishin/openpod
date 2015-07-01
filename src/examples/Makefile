@@ -6,7 +6,7 @@ all::
 #	$(MAKE) test
 
 install::
-	# TODO
+# Nothing
 
 clean::
 	$(MAKE) -C kernel   clean

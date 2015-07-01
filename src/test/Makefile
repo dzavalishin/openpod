@@ -4,7 +4,7 @@ all::
 	$(MAKE) test
 
 install::
-	# TODO
+# Nothing
 
 clean::
 	cd unit; sh clean.sh; cd ..

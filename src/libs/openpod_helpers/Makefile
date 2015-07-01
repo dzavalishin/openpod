@@ -1,12 +1,11 @@
 include ../../config.mk
 
-# TODO move pod_local_types.h from here and tests to some common place
 CFLAGS += -I../../openpod -I../..
 
 all:	libopenpod_helpers.a
 
 install::
-	# TODO
+# Nothing
 
 clean::
 	-rm *.o

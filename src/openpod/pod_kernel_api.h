@@ -52,7 +52,6 @@ errno_t     pod_dev_unlink( struct pod_driver *drv, struct pod_device *dev );   
 // With pod_dev_event driver reports state change and can send log messages tied to a specific device.
 //
 // Basically this callback can be safely ignored by kernel. Implement empty function and you're ok.
-// TODO add default implementation to lib, with weak linkage, so that it will be linked only if kernel has no specific one
 //
 // ------------------------------------------------------------------
 
@@ -167,16 +166,14 @@ void        pod_panic(const char *format, ...);
 //
 // Memory and address space
 //
-// Required. TODO do we need map/unmap/vadd allocation? What to do with MMU-less systems?
+// Required. TODO do we need map/unmap/vaddr space allocation? What to do with MMU-less systems?
 //
 // ------------------------------------------------------------------
 
-// TODO size_t
 
-
-errno_t     pod_alloc_physmem( unsigned int nbytes, physaddr_t *mem );  // NB! Mem size in bytes! Allocates pages. npages * pagesize >= nbytes
-errno_t     pod_alloc_vaddr( unsigned int nbytes, void **vaddr );       // NB! Mem size in bytes! Allocates pages. npages * pagesize >= nbytes
-errno_t     pod_alloc_kheap( unsigned int nbytes, void **mem );
+errno_t     pod_alloc_physmem( size_t nbytes, physaddr_t *mem );  // NB! Mem size in bytes! Allocates pages. npages * pagesize >= nbytes
+errno_t     pod_alloc_vaddr( size_t nbytes, void **vaddr );       // NB! Mem size in bytes! Allocates pages. npages * pagesize >= nbytes
+errno_t     pod_alloc_kheap( size_t nbytes, void **mem );
 
 
 errno_t     pod_free_physmem( physaddr_t mem );
@@ -200,8 +197,8 @@ errno_t     pod_map_mem( physaddr_t mem, void *vaddr, int flags );
 errno_t     pod_unmap_mem( physaddr_t mem, void *vaddr, int flags );
 
 
-errno_t     pod_wire_mem( void *mem, unsigned int nbytes );         // Make sure memory is paged in and non-pageable. Can block! Don't call in pod_rq_start!
-errno_t     pod_unwire_mem( void *mem, unsigned int nbytes ); 
+errno_t     pod_wire_mem( void *mem, size_t nbytes );         // Make sure memory is paged in and non-pageable. Can block! Don't call in pod_rq_start!
+errno_t     pod_unwire_mem( void *mem, size_t nbytes ); 
 
 
 #endif // POD_KERNEL_API_H

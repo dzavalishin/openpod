@@ -6,6 +6,7 @@
 #include <CUnit/Basic.h>
 
 #include "utils.h"
+#include "verbose.h"
 
 #include <openpod.h>
 #include <pod_deffunc.h>
@@ -130,7 +131,7 @@ pod_driver test_driver = {
 
 pod_device test_device =
 {
-	0, // TODO magic
+	POD_DEVICE_MAGIC,
 
 	POD_DEV_CLASS_VIDEO, 
 	0, 0,

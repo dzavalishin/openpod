@@ -29,8 +29,6 @@ errno_t pod_gen_listproperties( pod_properties *ps, int nProperty, char *pValue,
 
 static pod_property *find_property( pod_properties *ps, const char *pName )
 {
-    // TODO check/eat prefix - not used
-    // TODO binsearch
     unsigned int i;
 
     for( i = 0; i < ps->lsize; i++ )

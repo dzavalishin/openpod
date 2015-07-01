@@ -1,7 +1,6 @@
 include ../../config.mk
 
-# TODO move pod_local_types.h from here and tests to some common place
-CFLAGS += -I../../openpod -I.
+CFLAGS += -I../../openpod -I../..
 
 all:	pseudo_kernel
 

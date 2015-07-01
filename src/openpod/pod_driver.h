@@ -100,7 +100,7 @@ typedef struct pod_driver
     uint8_t         class_id;
     uint8_t         pad0;
     uint8_t         pad1;
-    uint8_t         state_flags; // Driver state - TODO
+    uint8_t         state_flags; // Driver state
 
 //uint32_t      capabilities; // tbd.
 
@@ -126,7 +126,7 @@ typedef struct pod_driver
 } pod_driver;
 
 
-// Drivar is initialized (constructed)
+// Driver is initialized (constructed)
 #define POD_DRV_STATE_INIT      (1<<0)
 // Driver hardware search done (pod_sense called)
 #define POD_DRV_STATE_FOUND     (1<<1)

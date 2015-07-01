@@ -10,11 +10,14 @@
 #include <openpod.h>
 #include <pod_io_video.h>
 
+#include "verbose.h"
+
 // Bare bones implementation of OpenPOD kernel API
 
 
 void req_done_func( struct pod_request *rq )
 {
+#if TEST_VERBOSE
 	fprintf( stderr, "rq done, status = %d\n", rq->err );
 
 	struct pod_video_rq_mode *rq_arg = rq->op_arg;
@@ -28,7 +31,7 @@ void req_done_func( struct pod_request *rq )
 		if( !rq->err )
 			fprintf( stderr, "x_size, y_size = %d*%d, format = %d\n", rq_arg->x_size, rq_arg->y_size, rq_arg->buf_fmt );
 	}
-
+#endif
 	free(rq); // frees piggybacked arg too
 }
 
@@ -82,7 +85,9 @@ errno_t		pod_dev_link( struct pod_driver *drv, struct pod_device *dev )	// Repor
 	(void) drv;
 	(void) dev;
 
+#if TEST_VERBOSE
 	fprintf( stderr, "Device link: 0x%p\n", dev );
+#endif
 
 	if( req_thread == 0 )
 		pthread_create( &req_thread, NULL, &req_thread_func, dev );
@@ -97,7 +102,9 @@ errno_t		pod_dev_unlink( struct pod_driver *drv, struct pod_device *dev )
 	(void) drv;
 	(void) dev;
 
+#if TEST_VERBOSE
 	fprintf( stderr, "Device unlink: 0x%p\n", dev );
+#endif
 
 	// Empty - remove dev from list? Stop requests?
 	return 0;
@@ -107,7 +114,10 @@ errno_t		pod_dev_event( struct pod_driver *drv, struct pod_device *dev, int even
 {
 	(void) drv;
 	(void) dev;
+	(void) event_id;
+	(void) event_info;
 
+#if TEST_VERBOSE
 	fprintf( stderr, "Device event: 0x%p, id %d\n", dev, event_id );
 
 	switch( event_id )
@@ -123,6 +133,7 @@ errno_t		pod_dev_event( struct pod_driver *drv, struct pod_device *dev, int even
 	default:
 		return EINVAL;	// Unknown event type
 	}
+#endif
 
 	return 0;
 }
@@ -130,7 +141,7 @@ errno_t		pod_dev_event( struct pod_driver *drv, struct pod_device *dev, int even
 
 
 
-errno_t     pod_alloc_kheap( unsigned int nbytes, void **mem )
+errno_t     pod_alloc_kheap( size_t nbytes, void **mem )
 {
     void *ret = calloc( 1, nbytes );
     if( ret == 0 ) return ENOMEM;
