@@ -2,11 +2,9 @@
 #include <pod_kernel_api.h>
 
 
-// Default implementation, supports just logging
+// Default implementation, supports just logging, replace in a real kernel, if need something more
 
-// __attribute__((weak))
-
-errno_t		
+errno_t	__attribute__((weak))	
 pod_dev_event( struct pod_driver *drv, struct pod_device *dev, int event_id, void *event_info ) 
 {
 	(void)dev;

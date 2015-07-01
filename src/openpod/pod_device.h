@@ -68,6 +68,8 @@ typedef struct pod_device
     uint8_t             internal_flags; // Not exposed as state change to kernel
     uint8_t             state_flags; // Device state
 
+    char                *name;
+
     struct pod_driver   *drv;
 
     pod_dev_f           *calls; // dev io entry points

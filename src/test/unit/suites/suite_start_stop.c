@@ -137,6 +137,8 @@ pod_device test_device =
 	0, 0,
 	0, 	// flags
 
+	"test device",
+
 	&test_driver,
 
 	&dev_func, 	// dev io entry points

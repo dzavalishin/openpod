@@ -48,7 +48,9 @@ type Pod_Device is record
 	class_id	: Byte;
 	class_flags	: Byte;		-- Class specific flags,
 	internal_flags	: Byte;		-- Not exposed as state change to kernel
-	state_flags	: Byte;		-- Device state
+    state_flags	: Byte;		-- Device state
+
+	name			: Interfaces.C.Strings.chars_ptr; --access Character;
 
 	drv		: access Pod_Driver;
 

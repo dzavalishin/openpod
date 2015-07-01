@@ -60,6 +60,9 @@ pod_device simple_device =
 	0, 0,
 	0, 	// flags
 
+    // Device name, either static or runtime-generated
+	"simple driver skeleton device name - RENAME ME!",
+
 	&simple_driver,
 
 	&dev_func, 	// dev io entry points
