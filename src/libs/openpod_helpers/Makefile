@@ -15,7 +15,7 @@ clean::
 	-rm *.~h
 
 # turned ADA off - openpod.o
-libopenpod_helpers.a: pod_dev_event.o request.o driver.o device.o rq_to_sync.o 
+libopenpod_helpers.a: pod_dev_event.o request.o driver.o device.o rq_to_sync.o properties.o mem.o
 	ar crsv $@ *.o
 	cp $@ ..
 

@@ -46,9 +46,8 @@ typedef struct pod_property {
 
     char                **val_list; // for enums
 
-    void                (*activate)(struct pod_properties *ps, void *context, size_t offset, void *vp );
+    errno_t             (*activate)(struct pod_properties *ps, void *context, size_t offset, void *vp );
     errno_t             (*setf)(struct pod_properties *ps, void *context, size_t offset, void *vp, const char *val);
-    // unused yet
     errno_t             (*getf)(struct pod_properties *ps, void *context, size_t offset, void *vp, char *val, size_t len);
 } pod_property;
 
@@ -60,14 +59,14 @@ typedef struct pod_property {
 
 //-------------------------------------------------------------------
 //
-// Generic property manipulation code
+// Generic property manipulation code - hidden
 //
 //-------------------------------------------------------------------
 
 
-errno_t	pod_gen_setproperty( pod_properties *ps, void *context, const char *pName, const char *pValue );
-errno_t	pod_gen_getproperty( pod_properties *ps, void *context, const char *pName, char *pValue, int vlen );
-errno_t pod_gen_listproperties( pod_properties *ps, int nProperty, char *pValue, int vlen );
+//errno_t	pod_gen_setproperty( pod_properties *ps, void *context, const char *pName, const char *pValue );
+//errno_t	pod_gen_getproperty( pod_properties *ps, void *context, const char *pName, char *pValue, int vlen );
+//errno_t pod_gen_listproperties( pod_properties *ps, int nProperty, char *pValue, int vlen );
 
 
 //-------------------------------------------------------------------
@@ -81,9 +80,9 @@ errno_t pod_gen_listproperties( pod_properties *ps, int nProperty, char *pValue,
 
 struct pod_driver;
 
-errno_t gen_drv_listproperties( struct pod_driver *drv, int nProperty, char *pValue, int vlen );
-errno_t	gen_drv_getproperty( struct pod_driver *drv, const char *pName, char *pValue, int vlen );
-errno_t	gen_drv_setproperty( struct pod_driver *drv, const char *pName, const char *pValue );
+errno_t pod_drv_listproperties( struct pod_driver *drv, int nProperty, char *pValue, int vlen );
+errno_t	pod_drv_getproperty( struct pod_driver *drv, const char *pName, char *pValue, int vlen );
+errno_t	pod_drv_setproperty( struct pod_driver *drv, const char *pName, const char *pValue );
 
 
 
@@ -98,9 +97,9 @@ errno_t	gen_drv_setproperty( struct pod_driver *drv, const char *pName, const ch
 
 struct pod_device;
 
-errno_t gen_dev_listproperties( struct pod_device *dev, int nProperty, char *pValue, int vlen );
-errno_t	gen_dev_getproperty( struct pod_device *dev, const char *pName, char *pValue, int vlen );
-errno_t	gen_dev_setproperty( struct pod_device *dev, const char *pName, const char *pValue );
+errno_t pod_dev_listproperties( struct pod_device *dev, int nProperty, char *pValue, int vlen );
+errno_t	pod_dev_getproperty( struct pod_device *dev, const char *pName, char *pValue, int vlen );
+errno_t	pod_dev_setproperty( struct pod_device *dev, const char *pName, const char *pValue );
 
 
 

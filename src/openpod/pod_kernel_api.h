@@ -173,9 +173,6 @@ void        pod_panic(const char *format, ...);
 
 // TODO size_t
 
-#define pod_malloc  pod_alloc_kheap
-#define pod_free    pod_free_kheap
-
 
 errno_t     pod_alloc_physmem( unsigned int nbytes, physaddr_t *mem );  // NB! Mem size in bytes! Allocates pages. npages * pagesize >= nbytes
 errno_t     pod_alloc_vaddr( unsigned int nbytes, void **vaddr );       // NB! Mem size in bytes! Allocates pages. npages * pagesize >= nbytes
@@ -191,6 +188,12 @@ errno_t     pod_free_vaddr( void * );
 
 // Allocate x86 low (<1mb) memory - need?
 //#define POD_MAP_FLAG_LOWMEM   (1<<16)
+
+
+void *pod_malloc(size_t ___nb);
+//inline void *pod_malloc(size_t ___nb)  { void *ret; errno_t rc = pod_alloc_kheap( (___nb), &ret ); if( rc ) return 0; return ret; }
+#define pod_free    pod_free_kheap
+
 
 
 errno_t     pod_map_mem( physaddr_t mem, void *vaddr, int flags );

@@ -128,3 +128,21 @@ errno_t		pod_dev_event( struct pod_driver *drv, struct pod_device *dev, int even
 }
 	
 
+
+
+errno_t     pod_alloc_kheap( unsigned int nbytes, void **mem )
+{
+    void *ret = calloc( 1, nbytes );
+    if( ret == 0 ) return ENOMEM;
+    *mem = ret;
+    return 0;
+}
+
+
+errno_t     pod_free_kheap( void *a )
+{
+    free(a);
+    return 0;
+}
+
+

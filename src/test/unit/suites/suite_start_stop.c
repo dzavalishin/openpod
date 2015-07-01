@@ -10,6 +10,7 @@
 #include <openpod.h>
 #include <pod_deffunc.h>
 #include <pod_io_video.h>
+#include <pod_properties.h>
 
 //-------------------------------------------------------------------
 //
@@ -52,6 +53,23 @@ static errno_t		(*test_driver_class_interface[])(struct pod_device *dev, void *a
 };
 
 
+static int 	property_blit_queue_timeout = 100;
+static char *	property_display_device_name = 0;
+
+static pod_property plist[] =
+{
+	{	pt_int32,	"blit_queue_timeout",	0, &property_blit_queue_timeout, 0, 0, 0, 0 },
+	{	pt_mstring,	"display_device_name",	0, &property_display_device_name, 0, 0, 0, 0 },
+};
+
+static pod_properties props =
+{
+	plist,
+	sizeof(plist)/sizeof(pod_property),
+	0 // TODO no get func yet
+};
+
+
 static pod_dev_f dev_func = 
 {
 	test_driver_enqueue,
@@ -84,7 +102,7 @@ pod_driver test_driver = {
 
 	0, // no optional entry points
 
-	0, // no properties
+	&props, // no properties
 
 	0, // Private state does not exist yet
 
@@ -160,6 +178,34 @@ TEST_FUNCT(ada_driver)
 #endif
 
 
+TEST_FUNCT(use_driver_properties)
+{
+	//errno_t	rc;
+        char buf[128];
+        // TODO test pod_gen_listproperties
+
+	// Int
+
+        CU_ASSERT_EQUAL(0,  pod_drv_getproperty( &test_driver, "blit_queue_timeout", buf, sizeof(buf) ) );
+        CU_ASSERT_STRING_EQUAL( buf, "100" );
+
+        CU_ASSERT_EQUAL(0,  pod_drv_setproperty( &test_driver, "blit_queue_timeout", "200" ) );
+
+        CU_ASSERT_EQUAL(0,  pod_drv_getproperty( &test_driver, "blit_queue_timeout", buf, sizeof(buf) ) );
+        CU_ASSERT_STRING_EQUAL( buf, "200" );
+
+        // String
+
+        CU_ASSERT_EQUAL(0,  pod_drv_setproperty( &test_driver, "display_device_name", "Elbrus 4K" ) );
+
+        CU_ASSERT_EQUAL(0,  pod_drv_getproperty( &test_driver, "display_device_name", buf, sizeof(buf) ) );
+        CU_ASSERT_STRING_EQUAL( buf, "Elbrus 4K" );
+
+        //printf( "property_display_device_name = '%s'\n", property_display_device_name );
+        //printf( "display_device_name = '%s'\n", buf );
+
+}
+
 TEST_FUNCT(run_driver) 
 {
     printf("running driver\n");
@@ -190,6 +236,7 @@ void runSuite(void) {
     if (suite) {
         ADD_SUITE_TEST(suite, start_driver)
 //        ADD_SUITE_TEST(suite, ada_driver)
+        ADD_SUITE_TEST(suite, use_driver_properties)
         ADD_SUITE_TEST(suite, run_driver)
         ADD_SUITE_TEST(suite, stop_driver)
     }
