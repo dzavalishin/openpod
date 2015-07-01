@@ -5,10 +5,17 @@
 
 static pod_dev_f dev_func = 
 {
-	simple_driver_enqueue,
-	simple_driver_dequeue,
-	simple_driver_fence,
-	simple_driver_raise,
+	//simple_driver_enqueue,
+	pod_default_enqueue,
+
+	//simple_driver_dequeue,
+	pod_default_dequeue,
+
+	//simple_driver_fence,
+	pod_default_fence,
+
+	//simple_driver_raise,
+	pod_default_raise
 };
 
 

@@ -2,12 +2,13 @@
 #include "simple_driver_skeleton.h"
 
 static errno_t		simple_device_io_getmode( pod_device *dev, struct pod_video_rq_mode *m );
+static errno_t		simple_device_io_setmode( pod_device *dev, struct pod_video_rq_mode *m );
 
 static void		(**class_interface)(struct pod_device *dev, void *arg) =
 {
 	0, // nop
 	simple_device_io_getmode,
-	0,
+	simple_device_io_setmode,
 	0,
 	0,
 	0,
@@ -64,37 +65,6 @@ errno_t		simple_driver_sense( struct pod_driver *drv )
 // If your hardware is slow, you need another driver skeleton, the
 // one which implements request queue and uses interrupts.
 
-static errno_t	simple_driver_enqueue( pod_device *dev, pod_request *rq )
-{
-	(void) dev;
-	// Serve request - do it right now
-
-	//printf( "rq->request_class = %d, dev->class_id = %d\n", rq->request_class, dev->class_id );
-
-	errno_t rc = 0;
-
-	switch( rq->operation )
-	{
-	case pod_video_getmode:
-		{
-		struct pod_video_rq_mode *rq_arg = rq->op_arg;
-		rc = simple_device_io_getmode( dev, rq_arg );
-		}
-		break;
-
-	// Implement other class ops here
-
-	default:
-		rq->err = pod_rq_status_param;
-		if( rq->done ) rq->done( rq );
-		return 0;
-	}
-
-	rq->err = rc ? pod_rq_status_ioerr : pod_rq_status_ok;
-	if( rq->done ) rq->done( rq );
-
-	return 0;
-}
 
 
 
@@ -102,7 +72,7 @@ static errno_t	simple_driver_enqueue( pod_device *dev, pod_request *rq )
 static errno_t		
 simple_device_io_getmode( pod_device *dev, struct pod_video_rq_mode *m )
 {
-	// Your code to do actual non-blocking io here
+	// Your code to do actual non-blocking io here - get current video mode
 
 	m->x_size = 1024;
 	m->y_size = 768;
@@ -113,6 +83,13 @@ simple_device_io_getmode( pod_device *dev, struct pod_video_rq_mode *m )
 }
 
 
+static errno_t		
+simple_device_io_getmode( pod_device *dev, struct pod_video_rq_mode *m )
+{
+	// Your code to do actual non-blocking io here - set new video mode
+
+	return ENXIO;
+}
 
 
 

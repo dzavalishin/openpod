@@ -183,6 +183,7 @@ TEST_FUNCT(use_driver_properties)
 	//errno_t	rc;
         char buf[128];
         // TODO test pod_gen_listproperties
+        // TODO test property setf()/getf()/activate(), properties valp()
 
 	// Int
 

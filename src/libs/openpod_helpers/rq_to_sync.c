@@ -2,6 +2,7 @@
 
 #include <openpod.h>
 #include <pod_rq.h>
+#include <pod_deffunc.h>
 
 //-------------------------------------------------------------------
 //

@@ -10,7 +10,7 @@
 
 
 
-
+/* library has pod_default_...
 
 static errno_t	simple_driver_dequeue( pod_device *dev, pod_request *rq )
 {
@@ -38,7 +38,7 @@ static errno_t	simple_driver_raise( pod_device *dev, pod_request *rq, uint32_t i
 }
 
 
-
+*/
 
 
 
