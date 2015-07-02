@@ -11,10 +11,13 @@
 
 #define VBE_DISPI_MAX_XRES 1280
 #define VBE_DISPI_MAX_YRES 960
-
+#define VBE_DISPI_MAX_BPP  32
 
 errno_t pod_bochs_activate( struct pod_driver *drv );
 errno_t pod_bochs_deactivate( struct pod_driver *drv );
+
+errno_t pod_bochs_destruct( struct pod_driver *drv );
+
 
 errno_t pod_bochs_sense( struct pod_driver *drv );
 

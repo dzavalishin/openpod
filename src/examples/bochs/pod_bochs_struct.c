@@ -15,7 +15,7 @@ pod_driver pod_bochs_driver = {
 
     {
         pod_default_construct,          // Empty
-        pod_default_destruct,           // Empty
+        pod_bochs_destruct,
 
         pod_bochs_activate,
         pod_bochs_deactivate,

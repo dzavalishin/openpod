@@ -181,7 +181,10 @@ errno_t     pod_free_kheap( void * );
 errno_t     pod_free_vaddr( void * );
 
 
-#define POD_MAP_FLAG_UNCACHED   (1<<1)
+#define POD_MAP_NOCACHE     (1<<1)
+#define POD_MAP_READ        (1<<2)
+#define POD_MAP_WRITE       (1<<3)
+#define POD_MAP_RW          (POD_MAP_WRITE|POD_MAP_READ)
 
 // Allocate x86 low (<1mb) memory - need?
 //#define POD_MAP_FLAG_LOWMEM   (1<<16)
@@ -193,8 +196,8 @@ void *pod_malloc(size_t ___nb);
 
 
 
-errno_t     pod_map_mem( physaddr_t mem, void *vaddr, int flags );
-errno_t     pod_unmap_mem( physaddr_t mem, void *vaddr, int flags );
+errno_t     pod_map_mem( physaddr_t mem, void *vaddr, size_t nBytes, int flags );
+errno_t     pod_unmap_mem( physaddr_t mem, void *vaddr, size_t nBytes, int flags );
 
 
 errno_t     pod_wire_mem( void *mem, size_t nbytes );         // Make sure memory is paged in and non-pageable. Can block! Don't call in pod_rq_start!
