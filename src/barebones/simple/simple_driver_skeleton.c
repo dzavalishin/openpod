@@ -4,7 +4,7 @@
 static errno_t		simple_device_io_getmode( pod_device *dev, struct pod_video_rq_mode *m );
 static errno_t		simple_device_io_setmode( pod_device *dev, struct pod_video_rq_mode *m );
 
-static void		(**class_interface)(struct pod_device *dev, void *arg) =
+static errno_t		(**class_interface)(struct pod_device *dev, void *arg) =
 {
 	0, // nop
 	simple_device_io_getmode,

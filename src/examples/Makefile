@@ -1,14 +1,14 @@
 include ../config.mk
 
 all::
-	$(MAKE) -C kernel	all
-#	$(MAKE) -C openpod_rq 		all
+	$(MAKE) -C kernel all
+	$(MAKE) -C bochs  all
 #	$(MAKE) test
 
 install::
 # Nothing
 
 clean::
-	$(MAKE) -C kernel   clean
-#	$(MAKE) -C openpod_rq		clean
+	$(MAKE) -C kernel clean
+	$(MAKE) -C bochs  clean
 #	-rm *.a
