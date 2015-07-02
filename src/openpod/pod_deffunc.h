@@ -1,5 +1,7 @@
 #include "openpod.h"
 
+#include <errno.h>
+
 //*******************************************************************
 //
 // OpenPOD
@@ -17,13 +19,13 @@ errno_t	pod_default_dequeue( pod_device *dev, pod_request *rq );
 
 
 // Empty, does nothing, returns success. Can be used if above pod_default_enqueue used.
-errno_t	pod_default_fence( pod_device *dev, pod_request *rq );
+errno_t	pod_default_fence( pod_device *dev );
 
 // Empty, does nothing, returns success. Can be used if above pod_default_enqueue used.
 errno_t	pod_default_raise( pod_device *dev, pod_request *rq, uint32_t io_prio );
 
 // Combine them to simplify rq-less drivers even more
-extern static pod_dev_f pod_default_dev_func;
+extern pod_dev_f pod_default_dev_func;
 
 
 errno_t		pod_default_construct( struct pod_driver *drv );

@@ -5,7 +5,7 @@
 #include <pod_deffunc.h>
 
 
-static pod_dev_f pod_default_dev_func = 
+pod_dev_f pod_default_dev_func = 
 {
 	pod_default_enqueue,
 	pod_default_dequeue,
@@ -26,10 +26,9 @@ errno_t	pod_default_dequeue( pod_device *dev, pod_request *rq )
 	return ENOENT; // Too late, rq is done already (as we do anything syncronously)
 }
 
-errno_t	pod_default_fence( pod_device *dev, pod_request *rq )
+errno_t	pod_default_fence( pod_device *dev )
 {
 	(void) dev;
-	(void) rq;
 
 	return 0; // We have no q, so all requests are done in order
 }
