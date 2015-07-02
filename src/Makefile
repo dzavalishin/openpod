@@ -7,7 +7,7 @@ default::
 
 install::
 	$(MAKE) all
-	# TODO
+	$(MAKE) -C openpod install
 	$(MAKE) -C libs install
 
 all::
@@ -19,4 +19,5 @@ clean::
 	$(MAKE) -C libs clean
 	$(MAKE) -C test clean
 	$(MAKE) -C examples clean
+	$(MAKE) -C openpod clean
 

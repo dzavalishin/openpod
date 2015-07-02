@@ -2,10 +2,14 @@
 // Hook to use local types definitions
 #include "pod_local_types.h"
 
+#ifndef POD_SIZE_T_DEFINED
+#define POD_SIZE_T_DEFINED
 
 // Get just one type definition
 #define __need_size_t
 #include <stddef.h>
+
+#endif // POD_SIZE_T_DEFINED
 
 
 #ifndef POD_ERRNO_T_DEFINED
