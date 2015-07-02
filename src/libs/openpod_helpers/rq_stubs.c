@@ -5,6 +5,15 @@
 #include <pod_deffunc.h>
 
 
+static pod_dev_f pod_default_dev_func = 
+{
+	pod_default_enqueue,
+	pod_default_dequeue,
+	pod_default_fence,
+	pod_default_raise
+};
+
+
 // These empty implementations can be used if driver has no request queue and
 // supports sync interface only. See pod_default_enqueue for async to sync io
 // interface converter.

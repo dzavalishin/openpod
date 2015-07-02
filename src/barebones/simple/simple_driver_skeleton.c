@@ -84,7 +84,7 @@ simple_device_io_getmode( pod_device *dev, struct pod_video_rq_mode *m )
 
 
 static errno_t		
-simple_device_io_getmode( pod_device *dev, struct pod_video_rq_mode *m )
+simple_device_io_setmode( pod_device *dev, struct pod_video_rq_mode *m )
 {
 	// Your code to do actual non-blocking io here - set new video mode
 
