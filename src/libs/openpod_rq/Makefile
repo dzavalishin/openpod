@@ -8,7 +8,7 @@ CFLAGS += -I../../openpod -I../..
 all:	$(LIB)
 
 install::
-	# TODO
+# Empty
 
 clean::
 	-rm *.o

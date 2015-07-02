@@ -201,8 +201,16 @@ TEST_FUNCT(use_driver_properties)
 {
 	//errno_t	rc;
         char buf[128];
-        // TODO test pod_gen_listproperties
+
         // TODO test combined valp()/get/set/activate
+
+        // List
+
+        CU_ASSERT_EQUAL(0,  pod_drv_listproperties( &test_driver, 3, buf, sizeof(buf) ) );
+        CU_ASSERT_STRING_EQUAL( buf, "ro_func_conv" );
+
+        CU_ASSERT_EQUAL(ENOENT,  pod_drv_listproperties( &test_driver, 333, buf, sizeof(buf) ) );
+        CU_ASSERT_EQUAL(E2BIG,  pod_drv_listproperties( &test_driver, 0, buf, 2) );
 
 	// Int
 
