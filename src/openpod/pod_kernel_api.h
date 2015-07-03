@@ -170,15 +170,19 @@ void        pod_panic(const char *format, ...);
 //
 // ------------------------------------------------------------------
 
+// TODO add preferred address to pod_alloc_vaddr - Embox runs with no MMU, 
+// so we need some way to allocate virt mem just where phys mem is if
+// we run on non-MMU system. Alternatively we can define additional kind of
+// pod_map_mem which decides where to map and returns vitrual address.
 
 errno_t     pod_alloc_physmem( size_t nbytes, physaddr_t *mem );  // NB! Mem size in bytes! Allocates pages. npages * pagesize >= nbytes
 errno_t     pod_alloc_vaddr( size_t nbytes, void **vaddr );       // NB! Mem size in bytes! Allocates pages. npages * pagesize >= nbytes
 errno_t     pod_alloc_kheap( size_t nbytes, void **mem );
 
 
-errno_t     pod_free_physmem( physaddr_t mem );
+errno_t     pod_free_physmem( size_t nbytes, physaddr_t mem );
+errno_t     pod_free_vaddr( size_t nbytes, void * );
 errno_t     pod_free_kheap( void * );
-errno_t     pod_free_vaddr( void * );
 
 
 #define POD_MAP_NOCACHE     (1<<1)
@@ -197,6 +201,7 @@ void *pod_malloc(size_t ___nb);
 
 
 errno_t     pod_map_mem( physaddr_t mem, void *vaddr, size_t nBytes, int flags );
+// TODO remove physaddr arg? remove flags arg?
 errno_t     pod_unmap_mem( physaddr_t mem, void *vaddr, size_t nBytes, int flags );
 
 

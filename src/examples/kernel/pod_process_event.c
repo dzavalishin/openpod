@@ -41,7 +41,7 @@ pod_dev_event( struct pod_driver *drv, struct pod_device *dev, int event_id, voi
 		if( dev->class_id == POD_DEV_CLASS_VIDEO )
 		{
 			struct pod_video_rq_mode	m;
-			if( pod_dev_method( dev, pod_video_getmode, &m ) ) // Error?
+			if( pod_dev_method( dev, pod_video_getbestmode, &m ) ) // Error?
 				break;
 
 			if( 0 == preselected_video_driver ) // First one is better for sure :)

@@ -32,7 +32,7 @@
 typedef enum pod_video_operartions 
 {
     pod_video_nop, 
-    pod_video_getmode, pod_video_setmode,
+    pod_video_getmode, pod_video_setmode, pod_video_getbestmode,
     pod_video_clear_all, pod_video_clear, 
     pod_video_move, 
     pod_video_write, pod_video_read, 
@@ -117,7 +117,7 @@ struct pod_video_rq_rw_part
 };
 
 
-// getmode, setmode
+// getmode, setmode, getbestmode
 struct pod_video_rq_mode 
 {
     // если невалидно - ставим ближайший вверх, если нет - ошибка

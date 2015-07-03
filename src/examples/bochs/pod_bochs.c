@@ -62,12 +62,14 @@ static int bochs_init(struct pci_slot_dev *pci_dev) {
 
 static errno_t          pod_bochs_io_getmode( struct pod_device *dev, void *arg );
 static errno_t          pod_bochs_io_setmode( struct pod_device *dev, void *arg );
+static errno_t		pod_bochs_io_getbestmode( pod_device *dev, void *arg );
 
 static errno_t          (*class_interface[])(struct pod_device *dev, void *arg) =
 {
     0, // nop
     pod_bochs_io_getmode,
     pod_bochs_io_setmode,
+    pod_bochs_io_getbestmode,
     0,
     0,
     0,
@@ -121,7 +123,7 @@ errno_t pod_bochs_destruct( struct pod_driver *drv )
     errno_t rc = 0;
 
     if( vbuf_vaddr )
-        rc = pod_free_vaddr( vbuf_vaddr );
+        rc = pod_free_vaddr( vbuf_max_bytes, vbuf_vaddr );
 
     vbuf_vaddr = 0;
 
@@ -136,6 +138,22 @@ errno_t pod_bochs_destruct( struct pod_driver *drv )
 
 
 
+static errno_t
+pod_bochs_io_getbestmode( pod_device *dev, void *arg )
+{
+    struct pod_video_rq_mode *m = arg;
+    // Get best possible video mode
+
+    m->vbuf = 0; // no direct access to video buffer
+
+    memset( m, 0, sizeof(struct pod_video_rq_mode));
+
+    m->x_size  = VBE_DISPI_MAX_XRES;
+    m->y_size  = VBE_DISPI_MAX_YRES;
+    m->buf_fmt = pod_pixel_rgba; 	
+
+    return 0;
+}
 
 
 
