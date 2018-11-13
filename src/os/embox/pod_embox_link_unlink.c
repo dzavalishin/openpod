@@ -1,6 +1,9 @@
 #include <openpod.h>
+#include <pod_io_video.h>
 
 #include "pod_kernel_globals.h"
+
+#include <errno.h>
 
 // ------------------------------------------------------------------
 //
@@ -12,7 +15,7 @@
 // ------------------------------------------------------------------
 
 pod_device	*active_video_driver;
-static void attach_pod_framebuf();
+static errno_t attach_pod_framebuf();
 
 
 // Report a new available device to the OS kernel
@@ -96,7 +99,7 @@ static int openpod_set_var(struct fb_info *info, const struct fb_var_screeninfo 
         return -EINVAL;
     }
 
-    errnp_t rc = pod_dev_method( active_video_driver, pod_video_setmode, &m );
+    errno_t rc = pod_dev_method( active_video_driver, pod_video_setmode, &m );
     if( rc )
         return -rc; // TODO check rc;
 
@@ -119,10 +122,10 @@ static int openpod_get_var(struct fb_info *info, struct fb_var_screeninfo *var) 
 
     switch( m.buf_fmt )
     {
-    case pod_pixel_rgba:	ar->bits_per_pixel = 32; break;
-    case pod_pixel_rgb:		ar->bits_per_pixel = 24; break;
-    case pod_pixel_r5g6b5:	ar->bits_per_pixel = 16; break;
-    case pod_pixel_r5g6b5:	ar->bits_per_pixel = 16; break;
+    case pod_pixel_rgba:	var->bits_per_pixel = 32; break;
+    case pod_pixel_rgb:		var->bits_per_pixel = 24; break;
+    case pod_pixel_r5g6b5:	var->bits_per_pixel = 16; break;
+    case pod_pixel_r5g6b5:	var->bits_per_pixel = 16; break;
     default: return ENXIO;
     }
 
@@ -142,6 +145,14 @@ static const struct fb_ops openpod_ops = {
 
 static errno_t attach_pod_framebuf()
 {
+    errno_t rc;
+
+    struct pod_video_rq_mode	m;
+    rc = pod_dev_method( active_video_driver, pod_video_getmode, &m );
+    if(rc) return rc;
+
+    // TODO fb_create - virt or phys addr?
+
     struct fb_info *info;
 
     info = fb_create(&openpod_ops, mmap_base, mmap_len);

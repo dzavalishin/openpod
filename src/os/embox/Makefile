@@ -1,9 +1,9 @@
 include ../../config.mk
 
 TARGET=openpod_embox
-EMBOX_SRC_ROOT=/embox
+EMBOX_SRC_ROOT=p:/embox/trunk
 
-CFLAGS += -I../../openpod -I../..
+CFLAGS += -I../../openpod -I../.. -I$(EMBOX_SRC_ROOT)/src -I$(EMBOX_SRC_ROOT)/src/include
 
 all:	$(TARGET)
 
