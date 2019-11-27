@@ -240,3 +240,128 @@ Device methods
 Device life cycle
 -----------------
 
+There are two possible interfaces that device can implement. 
+
+Asyncronous interface
+---------------------
+
+  Main entry point for this iterface is ``pod_rq_enqueue`` entry point. Kernel constructs 
+  ``pod_request`` structure and calls ``pod_rq_enqueue``. Driver adds request to queue and
+  returns immediately. As soon as request is processed by driver request is filled with 
+  results (status code) and ``done`` function is called. (Pointer to ``done`` function is in
+  the request structure.)
+
+  OpenPOD project library provides helper functions for working with request queue.  
+
+  There is also a proxy function (``pod_default_enqueue``) provided that converts asyncronous 
+  calls to syncronous ones, so for a simple driver just a set of sync entry points can
+  be provided. We discourage writing drivers this way, but for a really fast tasks or
+  alpha level drivers this is ok.
+
+.. TODO need example.  
+
+Syncronous interface
+--------------------
+
+Each device class can provide a set of methods that is specific for this class. An 
+``class_interface`` field of device descriptor points to an array of functions, which
+implement class specific operations. There are ``pod_io_<CLASS_NAME>.h`` headers
+defining class specific interfaces. Currently interfaces for block, network and video
+drivers are provided.
+
+These methods are syncronous and return only if operation requested is done or error
+occured.
+
+It is possible to set up proxy code that converts syncronous calls to asyncronous ones, 
+so driver developer has to provide just one of them.
+
+Here is an example of making asyncronous request to a video driver. (Well, it is meaningless
+to do this call in async style, but this example shows that just any call can be done in both 
+sync and async style.)
+
+.. code:: c
+
+    pod_request *rq = calloc( 1, sizeof(pod_request) + sizeof(struct pod_video_rq_mode) );
+    if( rq == 0 ) { /* fail */ }
+
+    struct pod_video_rq_mode *rq_arg = ((void*)rq) + sizeof(pod_request);
+
+    rq->request_class   = POD_DEV_CLASS_VIDEO;
+    rq->operation       = pod_video_getmode;
+    rq->io_prio         = 0;
+    rq->op_arg          = rq_arg;
+    rq->done            = req_done_func;
+
+    rc = pod_rq_enqueue( dev, rq );
+    if( rc ) { /* fail */ }
+
+After completing request ``done`` function (``req_done_func()`` in this example)
+will be called and ``rq_arg`` will be filled with requested data.
+
+.. warning:: Callback can be called **before** ``pod_rq_enqueue`` return!
+
+  Don't rely on assumption that ``pod_rq_enqueue`` will return first and callback
+  function called next. For long calls such as (non flash) disk read can beheave
+  this way repeatedly, but it is **never** guaranteed. 
+
+  For example, it is extremely wrong to write something like
+
+  .. code:: c
+
+    rc = pod_rq_enqueue( dev, rq );
+    pod_kernel_lock_mutex( ... )
+    pod_kernel_wait_cond( ... )
+    pod_kernel_unlock_mutex( ... )
+
+  It is ok to do it this way:
+
+  .. code:: c
+
+    pod_kernel_lock_mutex( ... )
+    rc = pod_rq_enqueue( dev, rq );
+    pod_kernel_wait_cond( ... )
+    pod_kernel_unlock_mutex( ... )
+
+  But signalling cond in ``done`` function must be guarded by the same
+  mutex too.
+
+.. TODO provide sema?
+
+-------------------------
+Class specific interfaces
+-------------------------
+
+Both syncronous and asyncronous entry points implement same set of operations.
+
+For async interface operation is selected by ``request_class``, ``operation``  pair 
+of request structure fields. Of course, request_class must be equal to target device's
+class.
+
+Sync interface selects function by calling correct entry point. There is a helper
+function provided, but user code can do the same directly.
+
+.. code:: c
+
+    errno_t pod_dev_method( pod_device *dev, int op_id, void *param )
+    {
+        if( dev == 0 ) return ENODEV;
+
+        if( (op_id < 0) || (dev->class_interface == 0) ) return ENOSYS;
+
+        errno_t (*class_func)(pod_device *dev, void *arg);
+
+        // TODO check op id > max possible
+
+        class_func = dev->class_interface[op_id];
+
+        if( class_func == 0 ) return ENOSYS;
+
+        return class_func( dev, param );
+    }
+
+
+Block IO interface
+------------------
+
+
+
