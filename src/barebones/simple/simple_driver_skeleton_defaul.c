@@ -15,6 +15,9 @@ errno_t		simple_driver_activate( struct pod_driver *drv )
 	// Register dev
 
 	errno_t	rc;
+
+    drv->private_data = &simple_device;
+
 	struct pod_device *dev	= drv->private_data; // we are very simple
 
 	if( dev == 0 ) return ENOENT;

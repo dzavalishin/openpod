@@ -110,3 +110,75 @@ First of them, ``pod_default_enqueue``, will just call syncronous entry point of
 three other are no-ops.
 
 
+----------------
+Driver functions
+----------------
+
+All the driver lifecycle functions are trivial.
+
+Constructor and destructor (``simple_driver_construct`` and ``simple_driver_destruct``) are just 
+empty - we don't need them for this driver to work.
+
+
+simple_driver_activate
+----------------------
+
+This function is mostly copied from system default implementation.
+
+.. code:: c
+    :linenos:
+    :emphasize-lines: 4,9,12
+
+    errno_t		simple_driver_activate( struct pod_driver *drv )
+    {
+        errno_t	rc;
+
+        drv->private_data = &simple_device;
+
+        struct pod_device *dev	= drv->private_data; // we are very simple
+
+        if( dev == 0 ) return ENOENT;
+
+        POD_DEV_STATE_CLEAR( dev, POD_DEV_STATE_PAUSE );
+        POD_DEV_STATE_SET( dev, POD_DEV_STATE_LINKED );
+
+        rc = pod_dev_link( drv, dev );
+        if( rc ) return rc;
+
+        rc = pod_dev_event( drv, dev, POD_EVENT_LOG, "device activated" );
+        if( rc ) return rc;
+
+        return 0;
+    }
+
+
+
+simple_driver_deactivate
+------------------------
+
+Again, function is copied from system default implementation.
+
+.. code:: c
+    :linenos:
+    :emphasize-lines: 8,11
+
+    errno_t		simple_driver_deactivate( struct pod_driver *drv )
+    {
+        errno_t	rc;
+        struct pod_device *dev	= drv->private_data; // we are very simple
+
+        if( dev == 0 ) return ENOENT;
+
+        rc = pod_dev_event( drv, dev, POD_EVENT_LOG, "device deactivated" );
+        if( rc ) return rc;
+
+        rc = pod_dev_unlink( drv, dev );
+        if( rc ) return rc;
+
+        //POD_DEV_STATE_SET( dev, POD_DEV_STATE_PAUSE );
+        POD_DEV_STATE_CLEAR( dev, POD_DEV_STATE_LINKED );
+
+        return 0;
+    }
+
+

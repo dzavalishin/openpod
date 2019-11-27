@@ -47,7 +47,53 @@ Device class specifies API this device exports to the kernel.
 Driver descriptor
 =================
 
+.. code:: c
 
+    typedef struct pod_driver 
+    {
+        uint32_t            magic;
+
+        uint8_t             API_version_major; 
+        uint8_t             API_version_minor;  
+
+        uint8_t             arch_major; 
+        uint8_t             arch_minor; // undefined, must be 0
+
+        uint8_t             class_id;
+        uint8_t             pad0;
+        uint8_t             pad1;
+        uint8_t             state_flags; // Driver state
+
+        char                *name;
+
+        pod_dev_required_f  calls;
+        pod_dev_optional_f  *optional;
+
+        pod_properties      *prop;
+
+        void                *private_data; 
+
+        kernel_f            *kernel_driver_api; 
+
+    } pod_driver;
+
+All the fields of this structure will be described in reference part of this
+document, now we will just note the most interesting ones.
+
+**state_flags**
+  Used to track driver state, such as if driver found its hardware or not.
+
+**name**
+  Driver name, printable text for user to ideitify it.
+
+**calls**
+  Main set of driver entry points, see below.
+
+**private_data**
+  Private driver's state. Simple drivers keep here a link to an only
+  device descriptor.
+
+All the other fields can be zeroes or have default predefined values.
 
 --------------
 Driver methods
