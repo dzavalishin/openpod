@@ -258,23 +258,6 @@ Asyncronous interface
   be provided. We discourage writing drivers this way, but for a really fast tasks or
   alpha level drivers this is ok.
 
-.. TODO need example.  
-
-Syncronous interface
---------------------
-
-Each device class can provide a set of methods that is specific for this class. An 
-``class_interface`` field of device descriptor points to an array of functions, which
-implement class specific operations. There are ``pod_io_<CLASS_NAME>.h`` headers
-defining class specific interfaces. Currently interfaces for block, network and video
-drivers are provided.
-
-These methods are syncronous and return only if operation requested is done or error
-occured.
-
-It is possible to set up proxy code that converts syncronous calls to asyncronous ones, 
-so driver developer has to provide just one of them.
-
 Here is an example of making asyncronous request to a video driver. (Well, it is meaningless
 to do this call in async style, but this example shows that just any call can be done in both 
 sync and async style.)
@@ -327,6 +310,30 @@ will be called and ``rq_arg`` will be filled with requested data.
 
 .. TODO provide sema?
 
+Syncronous interface
+--------------------
+
+Each device class can provide a set of methods that is specific for this class. An 
+``class_interface`` field of device descriptor points to an array of functions, which
+implement class specific operations. There are ``pod_io_<CLASS_NAME>.h`` headers
+defining class specific interfaces. Currently interfaces for block, network and video
+drivers are provided.
+
+These methods are syncronous and return only if operation requested is done or error
+occured.
+
+It is possible to set up proxy code that converts syncronous calls to asyncronous ones, 
+so driver developer has to provide just one of them.
+
+
+.. code:: c
+
+    struct pod_video_rq_mode rq_arg;
+
+    rc = pod_dev_method( dev, pod_video_getmode, &rq_arg );
+    if( rc ) { /* fail */ }
+
+
 -------------------------
 Class specific interfaces
 -------------------------
@@ -360,8 +367,148 @@ function provided, but user code can do the same directly.
     }
 
 
-Block IO interface
+Video IO interface
 ------------------
 
 
+.. code:: c
 
+    typedef enum pod_video_operartions 
+    {
+        pod_video_nop, 
+        pod_video_getmode, pod_video_setmode, pod_video_getbestmode,
+        pod_video_clear_all, pod_video_clear, 
+        pod_video_move, 
+        pod_video_write, pod_video_read, 
+        pod_video_write_part, pod_video_read_part
+    } pod_video_operartions;
+
+    // Pixel format, pod_pixel_rgba is preferred
+    typedef enum pod_pixel_fmt 
+    {
+        pod_pixel_rgba,     // 32 bit RGBA, A byte is ignored by HW
+        pod_pixel_rgb,      // 24 bit RGB
+        pod_pixel_r5g6b5,   // 16 bit, 5-6-5
+        pod_pixel_r5g5b5,   // 16 bit, 5-5-5
+    } pod_pixel_fmt;
+
+    // flags
+    #define POD_VIDEO_IGNORE_Z  (1<<0)	// ignore z coordinate (but update z buffer)
+    #define POD_VIDEO_IGNORE_A  (1<<1)  // ignore A byte (aplha channel)
+
+    // clear
+    struct pod_video_rq_sqare 
+    {
+        uint32_t    x, y;
+        uint32_t    x_size, y_size;
+    };
+
+    // move from screen to screen
+    struct pod_video_rq_2sqare 
+    {
+        uint32_t    from_x, from_y;
+        uint32_t    from_x_size, from_y_size;
+
+        uint32_t    to_x, to_y;
+        uint32_t    to_x_size, to_y_size;
+    };
+
+    // write, read
+    struct pod_video_rq_rw 
+    {
+        uint32_t    x, y;
+        uint32_t    x_size, y_size;
+
+        uint32_t    z;
+        uint32_t    flags;
+
+        char        *buf;
+
+        pod_pixel_fmt   buf_fmt;    // формат пикселя буфера ядра
+    };
+
+    // write_part, read_part
+    struct pod_video_rq_rw_part 
+    {
+        uint32_t    from_x, from_y;     // point to start in buf
+        uint32_t    from_x_size, from_y_size;   // full size of bitmap in buf
+
+        uint32_t    to_x, to_y;         // point to start on screen
+
+        uint32_t    move_x_size, move_y_size;   // size of sqare to move
+
+        uint32_t    z;              // z position
+        uint32_t    flags;
+
+        char        *buf;
+
+        pod_pixel_fmt   buf_fmt;    // формат пикселя буфера ядра
+    };
+
+
+    // getmode, setmode, getbestmode
+    struct pod_video_rq_mode 
+    {
+        uint32_t    x_size, y_size; 
+        pod_pixel_fmt   buf_fmt;    
+
+        physaddr_t  vbuf;       // может быть 0? тогда всё через методы?
+    };
+
+
+
+
+
+Block IO interface
+------------------
+
+There are three possible operations defined for block IO devices.
+
+.. code:: c
+
+    enum pod_block_operartions 
+    {
+        pod_block_nop, 
+        pod_block_read, pod_block_write, 
+        pod_block_trim      // SSD specific
+    };
+
+    // trim
+    struct pod_block_rq
+    {
+        diskaddr_t  block_no;
+        uint32_t    block_count;
+        uint32_t    block_size;
+    };
+
+    // read, write
+    struct pod_block_io_rq
+    {
+        diskaddr_t  block_no;
+        uint32_t    block_count;
+        uint32_t    block_size;
+
+        physaddr_t  physmem_addr;
+    };
+
+
+Network IO interface
+--------------------
+
+.. code:: c
+
+    enum pod_video_operartions 
+    {
+        nop, get_mac_addr,
+        mac_send, mac_recv,
+        //ip_send, ip_recv, 
+    };
+
+    #define POD_NET_MAX_MAC 16
+
+    // get_mac_addr
+    struct pod_net_rq_mac
+    {
+        uint8_t mac_len;
+        uint8_t mac[POD_NET_MAX_MAC];
+    };
