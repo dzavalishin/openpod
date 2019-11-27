@@ -352,15 +352,12 @@ function provided, but user code can do the same directly.
     errno_t pod_dev_method( pod_device *dev, int op_id, void *param )
     {
         if( dev == 0 ) return ENODEV;
-
         if( (op_id < 0) || (dev->class_interface == 0) ) return ENOSYS;
 
         errno_t (*class_func)(pod_device *dev, void *arg);
 
         // TODO check op id > max possible
-
         class_func = dev->class_interface[op_id];
-
         if( class_func == 0 ) return ENOSYS;
 
         return class_func( dev, param );
@@ -370,6 +367,7 @@ function provided, but user code can do the same directly.
 Video IO interface
 ------------------
 
+Common types and structues.
 
 .. code:: c
 
@@ -396,14 +394,20 @@ Video IO interface
     #define POD_VIDEO_IGNORE_Z  (1<<0)	// ignore z coordinate (but update z buffer)
     #define POD_VIDEO_IGNORE_A  (1<<1)  // ignore A byte (aplha channel)
 
-    // clear
+Clear:
+
+.. code:: c
+
     struct pod_video_rq_sqare 
     {
         uint32_t    x, y;
         uint32_t    x_size, y_size;
     };
 
-    // move from screen to screen
+Move from screen to screen:
+
+.. code:: c
+
     struct pod_video_rq_2sqare 
     {
         uint32_t    from_x, from_y;
@@ -412,6 +416,10 @@ Video IO interface
         uint32_t    to_x, to_y;
         uint32_t    to_x_size, to_y_size;
     };
+
+Put or get complete bitmap:
+
+.. code:: c
 
     // write, read
     struct pod_video_rq_rw 
@@ -424,8 +432,12 @@ Video IO interface
 
         char        *buf;
 
-        pod_pixel_fmt   buf_fmt;    // формат пикселя буфера ядра
+        pod_pixel_fmt   buf_fmt;
     };
+
+Put or get partial bitmap:
+
+.. code:: c
 
     // write_part, read_part
     struct pod_video_rq_rw_part 
@@ -442,9 +454,12 @@ Video IO interface
 
         char        *buf;
 
-        pod_pixel_fmt   buf_fmt;    // формат пикселя буфера ядра
+        pod_pixel_fmt   buf_fmt;
     };
 
+Parameters for video mode related ops:
+
+.. code:: c
 
     // getmode, setmode, getbestmode
     struct pod_video_rq_mode 
@@ -473,7 +488,11 @@ There are three possible operations defined for block IO devices.
         pod_block_trim      // SSD specific
     };
 
-    // trim
+
+Parameters for ``trim`` operation:
+
+.. code:: c
+
     struct pod_block_rq
     {
         diskaddr_t  block_no;
@@ -481,7 +500,10 @@ There are three possible operations defined for block IO devices.
         uint32_t    block_size;
     };
 
-    // read, write
+Parameters for data IO (read, write):
+
+.. code:: c
+
     struct pod_block_io_rq
     {
         diskaddr_t  block_no;
@@ -495,6 +517,8 @@ There are three possible operations defined for block IO devices.
 Network IO interface
 --------------------
 
+Network class specification is incomplete.
+
 .. code:: c
 
     enum pod_video_operartions 
@@ -503,6 +527,10 @@ Network IO interface
         mac_send, mac_recv,
         //ip_send, ip_recv, 
     };
+
+Parameters for ``get_mac_addr`` operation:
+
+.. code:: c    
 
     #define POD_NET_MAX_MAC 16
 
