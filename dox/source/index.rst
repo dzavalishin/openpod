@@ -30,11 +30,16 @@ Source codes for the project (and for this book) can be found in `OpenPOD GitHub
 
 .. _PDF format: https://buildmedia.readthedocs.org/media/pdf/phantomdox/latest/phantomdox.pdf
 
+.........
+Rationale
+.........
+
+
 .. include:: introduction.rst.inc
 
-.................
-Project structure
-.................
+..................
+Project navigation
+..................
 
 .. include:: directories.rst.inc
 

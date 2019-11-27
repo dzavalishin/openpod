@@ -5,12 +5,13 @@ OpenPOD driver includes:
   
   Driver descriptor is a required part of a driver.
 
-* **Device descriptor.** A structure which describes each device exported by driver. Can be single and
-static, or can be dynamically allocated in run time. For example, USB disk driver can create device
-descriptors dynamically as devices come and go.
 
-Device descriptor is not a required part - there can be driver which does not export devices at all
-or just starts with empty set of devices. But most drivers will provide at least one device at start.
+* **Device descriptor.** A structure which describes each device exported by driver. Can be single and
+  static, or can be dynamically allocated in run time. For example, USB disk driver can create device
+  descriptors dynamically as devices come and go.
+
+  Device descriptor is not a required part - there can be driver which does not export devices at all
+  or just starts with empty set of devices. But most drivers will provide at least one device at start.
 
 * **Driver and/or device properties.** Set of key=value parameters to control driver or device and 
   request meta information. For example, sound driver can set sampling rate with corresponding
