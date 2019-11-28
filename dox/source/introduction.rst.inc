@@ -1,7 +1,5 @@
-There are tens of operating system projects in the world.
-
-From tiny experimental works to medium size projects to big and old ones with
-a bing community.
+There are tens of operating system projects in the world. From tiny experimental works 
+to medium size projects to big and big old ones with a bing community.
 
 All of them need drivers. All of OS authors work on quite the same drivers from early start
 and for ever and ever.
@@ -36,4 +34,4 @@ Goal is to define API and driver structure that is:
 
 Current state of specification: It is partially complete and waits for your comments.
 
-The best way to comment is to create an issue in project's `GitHub repository: <https://github.com/dzavalishin/openpod/issues>`_.
+The best way to comment is to create an issue in project's `GitHub repository <https://github.com/dzavalishin/openpod/issues>`_.

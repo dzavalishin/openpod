@@ -4,9 +4,9 @@
 .. rem    :caption: Contents:
 
 
-"""""""""""""""""""""""""""""""""""""""
-OpenPOD: Portable drivers specification
-"""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""
+OpenPOD: Portable driver API specification
+""""""""""""""""""""""""""""""""""""""""""
 
 ............
 Introduction
@@ -28,7 +28,7 @@ Source codes for the project (and for this book) can be found in `OpenPOD GitHub
    
    You can also get this document in `PDF format`_.
 
-.. _PDF format: https://buildmedia.readthedocs.org/media/pdf/phantomdox/latest/phantomdox.pdf
+.. _PDF format: https://buildmedia.readthedocs.org/media/pdf/openpod/latest/openpod.pdf
 
 .........
 Rationale
@@ -52,6 +52,17 @@ Driver structure
 .. include:: structure.rst.inc
 
 
+
+
+.....................
+Examples
+.....................
+
+
+.. include:: examples.rst.inc
+
+
+
 .........
 Reference
 .........
@@ -66,14 +77,3 @@ This section is not ready yet.
 
 
 .. REM .. include:: implement.rst.inc
-
-
-
-.....................
-Examples
-.....................
-
-
-.. include:: examples.rst.inc
-
-

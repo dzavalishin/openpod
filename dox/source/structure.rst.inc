@@ -13,7 +13,7 @@ OpenPOD driver includes:
   Device descriptor is not a required part - there can be driver which does not export devices at all
   or just starts with empty set of devices. But most drivers will provide at least one device at start.
 
-* **Driver and/or device properties.** Set of key=value parameters to control driver or device and 
+* **Driver and/or device properties descriptors.** Set of key=value parameters to control driver or device and 
   request meta information. For example, sound driver can set sampling rate with corresponding
   property.
 
@@ -57,12 +57,12 @@ Driver descriptor
         uint8_t             API_version_minor;  
 
         uint8_t             arch_major; 
-        uint8_t             arch_minor; // undefined, must be 0
+        uint8_t             arch_minor;
 
         uint8_t             class_id;
         uint8_t             pad0;
         uint8_t             pad1;
-        uint8_t             state_flags; // Driver state
+        uint8_t             state_flags;
 
         char                *name;
 
@@ -270,6 +270,8 @@ Device methods
   for this request all previously enqueued requests are complete
   and callbacks for them are finished too.
 
+  This entry point is optional.
+
 **pod_rq_raise**
 
   Change (usually - rise:) request priority.
@@ -287,23 +289,37 @@ Device methods
 Device life cycle
 -----------------
 
+* Driver detects device, constructs descriptor and calls ``pod_dev_link`` for this device.
+
+* Kernel connects device according to device class.
+
+* Kernel decides to use device, calls ``pod_dev_start`` for it.
+
+* Kernel calls sync interface methods or sends in IO requests for async IO.
+  Device executes requests. See below for details.
+
+* Kernel decides to cease using device, calls ``pod_dev_stop``.
+
+
+
+
 There are two possible interfaces that device can implement. 
 
 Asyncronous interface
 ---------------------
 
-  Main entry point for this iterface is ``pod_rq_enqueue`` entry point. Kernel constructs 
-  ``pod_request`` structure and calls ``pod_rq_enqueue``. Driver adds request to queue and
-  returns immediately. As soon as request is processed by driver request is filled with 
-  results (status code) and ``done`` function is called. (Pointer to ``done`` function is in
-  the request structure.)
+Main entry point for this iterface is ``pod_rq_enqueue`` entry point. Kernel constructs 
+``pod_request`` structure and calls ``pod_rq_enqueue``. Driver adds request to queue and
+returns immediately. As soon as request is processed by driver request is filled with 
+results (status code) and ``done`` function is called. (Pointer to ``done`` function is in
+the request structure.)
 
-  OpenPOD project library provides helper functions for working with request queue.  
+OpenPOD project library provides helper functions for working with request queue.  
 
-  There is also a proxy function (``pod_default_enqueue``) provided that converts asyncronous 
-  calls to syncronous ones, so for a simple driver just a set of sync entry points can
-  be provided. We discourage writing drivers this way, but for a really fast tasks or
-  alpha level drivers this is ok.
+There is also a proxy function (``pod_default_enqueue``) provided that converts asyncronous 
+calls to syncronous ones, so for a simple driver just a set of sync entry points can
+be provided. We discourage writing drivers this way, but for a really fast tasks or
+alpha level drivers this is ok.
 
 Here is an example of making asyncronous request to a video driver. (Well, it is meaningless
 to do this call in async style, but this example shows that just any call can be done in both 
