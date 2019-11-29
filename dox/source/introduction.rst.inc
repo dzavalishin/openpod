@@ -1,3 +1,8 @@
+=========
+Rationale
+=========
+
+
 There are tens of operating system projects in the world. From tiny experimental works 
 to medium size projects to big and big old ones with a bing community.
 
