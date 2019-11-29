@@ -35,3 +35,16 @@ Goal is to define API and driver structure that is:
 Current state of specification: It is partially complete and waits for your comments.
 
 The best way to comment is to create an issue in project's `GitHub repository <https://github.com/dzavalishin/openpod/issues>`_.
+
+=============
+What's inside
+=============
+
+This specification covers:
+
+* Services provided to the driver by kernel
+* Driver start / device discover / stop procedures (driver lifecycle)
+* Device announce to the kernel (device lifecycle)
+* Device API 
+* Configuration (PCI) information access
+* Asyncronous IO requests 
